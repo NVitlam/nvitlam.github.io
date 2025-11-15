@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nadav Vitlam - AI & IoT Solutions Architect</title>
+    <title>Nadav Vitlam - AI Architect & Tech Enthusiast</title>
     <style>
         * {
             margin: 0;
@@ -12,207 +12,1205 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #050510;
+            color: #e0e0e0;
+            overflow-x: hidden;
             min-height: 100vh;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Animated background with particles */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Neural network background */
+        .neural-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.3;
         }
         
         .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Terminal-style header */
+        .terminal-header {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(255, 255, 255, 0.15); }
+            to { box-shadow: 0 0 40px rgba(255, 255, 255, 0.25); }
+        }
+
+        .terminal-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .terminal-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-close { background: #ff5f56; }
+        .btn-minimize { background: #ffbd2e; }
+        .btn-maximize { background: #27c93f; }
+
+        .profile-section {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .profile-info {
+            text-align: center;
             max-width: 900px;
             margin: 0 auto;
-            padding: 40px 20px;
         }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .profile-icon {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-        }
-        
+
         h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #00ff88, #00d4ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: gradient-shift 3s ease infinite;
+            background-size: 200% 200%;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .typing-text {
+            font-size: 1.5em;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            border-right: 2px solid #00ff88;
+            padding-right: 5px;
+            animation: blink 0.7s step-end infinite;
+            min-height: 1.8em;
+            display: inline-block;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* Stats display */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .stat-card:hover::before {
+            animation: shine 1.5s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-icon {
             font-size: 2.5em;
-            color: #2d3748;
             margin-bottom: 10px;
         }
-        
-        .subtitle {
-            font-size: 1.2em;
-            color: #667eea;
-            font-weight: 600;
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff88;
         }
-        
-        .bio {
-            margin: 30px 0;
-            line-height: 1.8;
-            color: #4a5568;
-        }
-        
-        .section {
-            margin: 30px 0;
-        }
-        
-        .section h2 {
-            color: #2d3748;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .skill-tag {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+
+        .stat-label {
             font-size: 0.9em;
-            font-weight: 500;
+            color: #a0a0a0;
         }
-        
-        .projects {
+
+        /* Achievement badges */
+        .achievements {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .achievements h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        .badge-container {
             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
         }
-        
-        .project-card {
-            background: #f7fafc;
-            padding: 20px;
+
+        .badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #ffffff;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
         }
-        
-        .project-card h3 {
-            color: #2d3748;
+
+        .badge:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .badge-icon {
+            font-size: 3em;
             margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px currentColor);
         }
-        
-        .social-links {
+
+        .badge-title {
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .badge-desc {
+            font-size: 0.8em;
+            color: #a0a0a0;
+        }
+
+        /* Projects section with gaming aesthetics */
+        .projects-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            color: #00ff88;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .project-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .project-card:hover::after {
+            left: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .project-title {
+            font-size: 1.5em;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .project-level {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .tech-tag {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #00d4ff;
+        }
+
+        /* Skills matrix */
+        .skills-matrix {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .skill-category {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .skill-category h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .skill-bar-container {
+            margin-bottom: 15px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+        }
+
+        .skill-level {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .skill-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            border-radius: 10px;
+            position: relative;
+            animation: load-skill 1.5s ease-out;
+        }
+
+        @keyframes load-skill {
+            from { width: 0; }
+        }
+
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Social links with gaming style */
+        .social-section {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .social-grid {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 30px;
             flex-wrap: wrap;
         }
-        
-        .social-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
+
+        .social-link {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            padding: 15px 30px;
             border-radius: 25px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: #00ff88;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-size: 1.1em;
         }
-        
-        .social-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+
+        .social-link:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.3));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+            color: white;
         }
-        
+
+        /* Easter egg section */
+        .easter-egg {
+            text-align: center;
+            margin: 40px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+        }
+
+        .easter-egg-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .easter-egg-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Family section */
+        .family-section {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.25) 0%, rgba(45, 27, 78, 0.25) 100%);
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .family-section h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        .family-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 4em;
+            margin: 20px 0;
+        }
+
+        .heart-beat {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+        }
+
         @media (max-width: 768px) {
-            .card {
-                padding: 30px 20px;
+            .profile-section {
+                text-align: center;
             }
-            
+
+            .profile-info {
+                text-align: center;
+            }
+
             h1 {
                 font-size: 2em;
             }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0e27;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loading-text {
+            font-size: 2em;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+        }
+
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
+    <!-- Loading screen -->
+    <div class="loading" id="loading">
+        <div class="loading-text">
+            <span id="loading-msg">Initializing AI Systems...</span>
+            <span class="typing-cursor">_</span>
+        </div>
+    </div>
+
+    <!-- Particle canvas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Neural network background -->
+    <canvas class="neural-bg" id="neural-canvas"></canvas>
+
     <div class="container">
-        <div class="card">
-            <div class="header">
-                <div class="profile-icon">🔬</div>
-                <h1>Nadav Vitlam</h1>
-                <p class="subtitle">AI & AI-Agent Architect | Senior RTLS Solutions Architect</p>
+        <!-- Terminal Header -->
+        <div class="terminal-header">
+            <div class="terminal-title">
+                <div class="terminal-buttons">
+                    <div class="terminal-btn btn-close"></div>
+                    <div class="terminal-btn btn-minimize"></div>
+                    <div class="terminal-btn btn-maximize"></div>
+                </div>
+                <span style="color: #00ff88; font-family: 'Courier New', monospace; margin-left: 10px;">nadav@ai-architect:~$</span>
             </div>
-            
-            <div class="bio">
-                <p>Safeguarding Israel's pharmaceutical supply chain through innovative AI and IoT solutions. With 17+ years of experience managing mission-critical systems, I bridge traditional IoT infrastructure with cutting-edge artificial intelligence.</p>
-            </div>
-            
-            <div class="section">
-                <h2>🎯 Expertise</h2>
-                <div class="skills">
-                    <span class="skill-tag">AI & Machine Learning</span>
-                    <span class="skill-tag">LLM Optimization</span>
-                    <span class="skill-tag">RAG Systems</span>
-                    <span class="skill-tag">IoT Solutions</span>
-                    <span class="skill-tag">RTLS Architecture</span>
-                    <span class="skill-tag">Cybersecurity</span>
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">React</span>
-                    <span class="skill-tag">C#/.NET</span>
+
+            <div class="profile-section">
+                <div class="profile-info">
+                    <h1>Nadav Vitlam</h1>
+                    <div class="typing-text" id="typing-text"></div>
+                    <p style="margin-top: 20px; line-height: 1.8; color: #b0b0b0;">
+                        Solution architect specializing in critical infrastructure systems. I understand complex operational 
+                        needs and design tailored solutions that work. Whether it's RTLS networks for healthcare, AI-powered 
+                        security platforms, or enterprise monitoring systems - I bridge the gap between requirements and 
+                        reality. When I'm not architecting solutions, you'll find me gaming, listening to music, or spending 
+                        quality time with my amazing family.
+                    </p>
                 </div>
             </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value">17</div>
+                <div class="stat-label">Years Building Solutions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏥</div>
+                <div class="stat-value">17</div>
+                <div class="stat-label">Enterprise RTLS Systems</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-value">16</div>
+                <div class="stat-label">Local AI Models Managed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Solution Success Rate</div>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="achievements">
+            <h2>🏆 Achievements Unlocked</h2>
+            <div class="badge-container">
+                <div class="badge">
+                    <div class="badge-icon" style="color: #ffd700;">🎓</div>
+                    <div class="badge-title">AI Engineer</div>
+                    <div class="badge-desc">Ben-Gurion University 2025</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon" style="color: #00ff88;">🔐</div>
+                    <div class="badge-title">AI Security Architect</div>
+                    <div class="badge-desc">Local AI Pentesting Systems</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon" style="color: #00d4ff;">💊</div>
+                    <div class="badge-title">Critical Systems Architect</div>
+                    <div class="badge-desc">Healthcare & Infrastructure</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon" style="color: #a855f7;">🧠</div>
+                    <div class="badge-title">RAG Architect</div>
+                    <div class="badge-desc">LLM Optimization Pro</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon" style="color: #ff6b6b;">👨‍👩‍👧‍👦</div>
+                    <div class="badge-title">Family Man</div>
+                    <div class="badge-desc">Achievement Unlocked!</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon" style="color: #ffd700;">🎵</div>
+                    <div class="badge-title">Music Addict</div>
+                    <div class="badge-desc">Soundtrack of Life</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Matrix -->
+        <div class="skills-matrix">
+            <h2 class="section-title">💻 Skills & Abilities</h2>
             
-            <div class="section">
-                <h2>💼 Experience</h2>
+            <div class="skill-category">
+                <h3>🤖 AI & Machine Learning</h3>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>LLM Optimization & RAG Systems</span>
+                        <span class="skill-level">Expert</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 95%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>AI Agent Development</span>
+                        <span class="skill-level">Advanced</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>Model Quantization (GGUF, SINQ, MLC-LLM)</span>
+                        <span class="skill-level">Expert</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skill-category">
+                <h3>🔐 Cybersecurity</h3>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>AI-Powered Pentesting Systems (Kali Linux)</span>
+                        <span class="skill-level">Expert</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 92%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>Local AI Model Integration & MCP Architecture</span>
+                        <span class="skill-level">Expert</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skill-category">
+                <h3>⚙️ IoT & RTLS</h3>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>RTLS Architecture & Implementation</span>
+                        <span class="skill-level">Master</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 98%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>Asset Tracking & Management Systems</span>
+                        <span class="skill-level">Master</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 98%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>Temperature Monitoring Systems</span>
+                        <span class="skill-level">Master</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 98%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skill-category">
+                <h3>💻 Solution Development</h3>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>Python (Automation & AI Integration)</span>
+                        <span class="skill-level">Expert</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 93%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>Vibe Developer → Spec Developer</span>
+                        <span class="skill-level">Evolving</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar-container">
+                    <div class="skill-name">
+                        <span>C# / .NET (RTLS Systems)</span>
+                        <span class="skill-level">Advanced</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="projects-section">
+            <h2 class="section-title">🚀 Featured Projects</h2>
+            <div class="project-grid">
                 <div class="project-card">
-                    <h3>Senior RTLS Solutions Architect</h3>
-                    <p><strong>2Plus Group</strong> • 2008 - Present</p>
-                    <p>Managing 17 active RTLS systems across healthcare networks and retail chains. Preventing daily drug losses through advanced temperature monitoring and asset tracking systems.</p>
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">AI-Powered Security Platform</div>
+                            <p style="color: #a0a0a0;">Baron AI & MCP-based pentesting system</p>
+                        </div>
+                        <div class="project-level">LVL 99</div>
+                    </div>
+                    <p style="color: #b0b0b0; margin: 10px 0;">
+                        Built a comprehensive security platform on Kali Linux using local AI models for pentesting automation. 
+                        Developed custom MCP client bridging multiple MCP servers to main system. Currently managing 16 local 
+                        AI models, with Baron AI (BaronLLM-v2-OffensiveSecurityLLM-Q8) quantized to 4Q as the core pentesting 
+                        automation engine.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Baron AI (4Q)</span>
+                        <span class="tech-tag">MCP Architecture</span>
+                        <span class="tech-tag">Kali Linux</span>
+                        <span class="tech-tag">16 Local Models</span>
+                        <span class="tech-tag">Quantization</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="section">
-                <h2>🎓 Education</h2>
+
                 <div class="project-card">
-                    <h3>AI Engineering</h3>
-                    <p><strong>Ben-Gurion University of the Negev</strong> • 2025</p>
-                    <p>Focused on LLMs, RAG systems, agent development, and AI system integration.</p>
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">MCP Server Integration</div>
+                            <p style="color: #a0a0a0;">Development workflow automation</p>
+                        </div>
+                        <div class="project-level">LVL 95</div>
+                    </div>
+                    <p style="color: #b0b0b0; margin: 10px 0;">
+                        Model Context Protocol servers for enhanced development workflows with Claude Code and Android Studio.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">MCP</span>
+                        <span class="tech-tag">Claude</span>
+                        <span class="tech-tag">Android</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">Financial RAG System</div>
+                            <p style="color: #a0a0a0;">SEC document analysis</p>
+                        </div>
+                        <div class="project-level">LVL 92</div>
+                    </div>
+                    <p style="color: #b0b0b0; margin: 10px 0;">
+                        Comprehensive RAG system with hybrid retrieval methods for analyzing financial documents and SEC filings.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">RAG</span>
+                        <span class="tech-tag">LLM</span>
+                        <span class="tech-tag">Finance</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">Healthcare RTLS Solutions</div>
+                            <p style="color: #a0a0a0;">17 enterprise systems across Israel</p>
+                        </div>
+                        <div class="project-level">LVL 100</div>
+                    </div>
+                    <p style="color: #b0b0b0; margin: 10px 0;">
+                        Architected and deployed 17 mission-critical RTLS and temperature monitoring systems protecting 
+                        Israel's pharmaceutical supply chain. Designed tailored solutions for each facility's unique needs, 
+                        preventing millions in drug losses through intelligent asset tracking and environmental monitoring.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Solution Architecture</span>
+                        <span class="tech-tag">RTLS</span>
+                        <span class="tech-tag">Healthcare</span>
+                        <span class="tech-tag">C#/.NET</span>
+                        <span class="tech-tag">IoT</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">Pyragify + NotebookLM</div>
+                            <p style="color: #a0a0a0;">AI-assisted code analysis</p>
+                        </div>
+                        <div class="project-level">LVL 88</div>
+                    </div>
+                    <p style="color: #b0b0b0; margin: 10px 0;">
+                        Workflow combining pyragify with NotebookLM for comprehensive codebase analysis and documentation.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">RAG</span>
+                        <span class="tech-tag">Analysis</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">Interactive Entity Wiki</div>
+                            <p style="color: #a0a0a0;">Data visualization platform</p>
+                        </div>
+                        <div class="project-level">LVL 85</div>
+                    </div>
+                    <p style="color: #b0b0b0; margin: 10px 0;">
+                        Universal platform for analyzing maintenance system exports with interactive relationship mapping.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Visualization</span>
+                        <span class="tech-tag">Schema-Agnostic</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="section">
-                <h2>🚀 Interests</h2>
-                <p>Passionate about spec-driven development, AI interpretability, model quantization (GGUF, SINQ), and pushing the boundaries of intelligent automation. Exploring multi-agent architectures and local LLM deployment.</p>
+        </div>
+
+        <!-- Family Section -->
+        <div class="family-section">
+            <h2>❤️ What Matters Most</h2>
+            <p style="color: #b0b0b0; font-size: 1.1em; margin-bottom: 20px;">
+                Beyond the code and circuits, my greatest achievement is my family.
+            </p>
+            <div class="family-icons">
+                <span class="heart-beat">👨‍👩‍👧‍👦</span>
+                <span style="color: #ff6b6b;" class="heart-beat">❤️</span>
             </div>
-            
-            <div class="social-links">
-                <a href="https://github.com/NVitlam" class="social-btn">
+            <p style="color: #a0a0a0;">
+                Happily married with two wonderful children who remind me every day what I'm building the future for.
+            </p>
+        </div>
+
+        <!-- Personal Mission -->
+        <div class="achievements" style="margin-top: 30px;">
+            <h2>💭 Solution-Driven Architecture</h2>
+            <p style="color: #b0b0b0; line-height: 1.8; font-size: 1.05em;">
+                For 17 years, I've specialized in understanding what organizations actually need and architecting 
+                solutions that deliver. Whether it's RTLS systems protecting Israel's pharmaceutical supply chain, 
+                asset tracking preventing millions in losses, or temperature monitoring ensuring drug efficacy - I don't 
+                just implement technology, I solve problems.
+            </p>
+            <p style="color: #b0b0b0; line-height: 1.8; font-size: 1.05em; margin-top: 15px;">
+                Every system I've architected started with understanding the real need. In healthcare, a system failure 
+                doesn't just mean downtime - it means medication that doesn't reach patients. That's why my approach 
+                combines deep operational understanding with technical execution. I know what needs to work, and I make 
+                it work.
+            </p>
+            <p style="color: #b0b0b0; line-height: 1.8; font-size: 1.05em; margin-top: 15px;">
+                Now I'm bringing AI into critical infrastructure - not because it's trendy, but because intelligent 
+                systems can predict failures, optimize operations, and solve problems humans can't scale. From managing 
+                16 local AI models for security automation to quantizing specialized models for specific tasks, I architect 
+                solutions that are both innovative and reliable. Because in critical systems, there's no room for failure.
+            </p>
+        </div>
+
+        <!-- Social Links -->
+        <div class="social-section">
+            <h2 class="section-title">🌐 Connect & Collaborate</h2>
+            <div class="social-grid">
+                <a href="https://github.com/NVitlam" class="social-link" target="_blank">
                     <span>💻</span> GitHub
                 </a>
-                <a href="https://www.linkedin.com/in/nadav-vitlam-74167688/" class="social-btn">
+                <a href="https://www.linkedin.com/in/nadav-vitlam/" class="social-link" target="_blank">
                     <span>👔</span> LinkedIn
                 </a>
-                <a href="mailto:nadavvitlam@gmail.com" class="social-btn">
+                <a href="/cdn-cgi/l/email-protection#a6c8c7c2c7d0d0cfd2cac7cbe6c1cbc7cfca88c5c9cb" class="social-link">
                     <span>📧</span> Email
                 </a>
             </div>
         </div>
+
+        <!-- Music Section -->
+        <div class="easter-egg">
+            <h3 style="color: #a855f7; margin-bottom: 15px;">🎵 My Soundtrack</h3>
+            <p style="color: #b0b0b0; margin-bottom: 20px;">
+                Music is the constant companion in my life - whether I'm coding, analyzing systems, or just thinking.
+                Check out what keeps me in the zone.
+            </p>
+            <a href="https://open.spotify.com/user/YOUR_SPOTIFY_USER_ID" class="easter-egg-btn" target="_blank" style="display: inline-block; text-decoration: none;">
+                Open My Spotify Playlist
+            </a>
+        </div>
     </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Typing animation
+        const titles = [
+            "Solution Architect",
+            "AI & Infrastructure Specialist",
+            "RTLS Systems Expert",
+            "Problem Solver",
+            "Vibe → Spec Developer",
+            "Security Platform Designer",
+            "Tech Enthusiast"
+        ];
+        
+        let titleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function typeTitle() {
+            const typingElement = document.getElementById('typing-text');
+            const currentTitle = titles[titleIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentTitle.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentTitle.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            if (!isDeleting && charIndex === currentTitle.length) {
+                setTimeout(() => isDeleting = true, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                titleIndex = (titleIndex + 1) % titles.length;
+            }
+            
+            const speed = isDeleting ? 50 : 100;
+            setTimeout(typeTitle, speed);
+        }
+        
+        // Particles animation
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const particleCount = 100;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.3 - distance / 750})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animateParticles);
+        }
+        
+        // Neural network background
+        const neuralCanvas = document.getElementById('neural-canvas');
+        const neuralCtx = neuralCanvas.getContext('2d');
+        neuralCanvas.width = window.innerWidth;
+        neuralCanvas.height = window.innerHeight;
+        
+        const nodes = [];
+        const nodeCount = 50;
+        
+        class Node {
+            constructor() {
+                this.x = Math.random() * neuralCanvas.width;
+                this.y = Math.random() * neuralCanvas.height;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > neuralCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > neuralCanvas.height) this.vy *= -1;
+            }
+        }
+        
+        for (let i = 0; i < nodeCount; i++) {
+            nodes.push(new Node());
+        }
+        
+        function animateNeural() {
+            neuralCtx.clearRect(0, 0, neuralCanvas.width, neuralCanvas.height);
+            
+            nodes.forEach(node => node.update());
+            
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 200) {
+                        neuralCtx.beginPath();
+                        neuralCtx.moveTo(nodes[i].x, nodes[i].y);
+                        neuralCtx.lineTo(nodes[j].x, nodes[j].y);
+                        neuralCtx.strokeStyle = `rgba(255, 255, 255, ${0.2 - distance / 1000})`;
+                        neuralCtx.lineWidth = 2;
+                        neuralCtx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animateNeural);
+        }
+
+        // ============================================
+        // Loading screen
+        const loadingMessages = [
+            "Initializing AI Systems...",
+            "Loading neural networks...",
+            "Connecting to RTLS matrix...",
+            "Optimizing LLM parameters...",
+            "Rendering 3D assistant...",
+            "Almost there..."
+        ];
+        
+        let msgIndex = 0;
+        const loadingInterval = setInterval(() => {
+            document.getElementById('loading-msg').textContent = loadingMessages[msgIndex];
+            msgIndex++;
+            if (msgIndex >= loadingMessages.length) {
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    document.getElementById('loading').classList.add('fade-out');
+                }, 500);
+            }
+        }, 400);
+        
+        // Window resize handlers
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            neuralCanvas.width = window.innerWidth;
+            neuralCanvas.height = window.innerHeight;
+        });
+        
+        // Start animations
+        window.addEventListener('load', () => {
+            typeTitle();
+            animateParticles();
+            animateNeural();
+        });
+        
+        // Scroll effects
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const cards = document.querySelectorAll('.project-card, .stat-card, .badge');
+            
+            cards.forEach((card) => {
+                const cardTop = card.offsetTop;
+                const cardHeight = card.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrolled + windowHeight > cardTop + cardHeight / 4) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        // Initialize card animations
+        document.querySelectorAll('.project-card, .stat-card, .badge').forEach(card => {
+            card.style.opacity = '0';
+             card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease-out';
+        });
+    </script>
 </body>
 </html>
