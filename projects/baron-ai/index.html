@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baron AI / Mr. Smith — Security Platform Demo</title>
+    <link rel="stylesheet" href="/assets/css/demo-base.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ── Color tokens ── */
+        :root {
+            --bg-primary: #0a0f1a;
+            --accent-blue: #4a7ca5;
+            --accent-orange: #c44b2b;
+            --text-primary: #e0e4ec;
+            --text-secondary: #7a8599;
+            --agent-blue: #4a9eff;
+            --agent-orange: #e88a3a;
+            --agent-purple: #b07ce8;
+            --agent-green: #5ae05a;
+            --terminal-green: #5ae05a;
+            --terminal-amber: #e8c44a;
+            --terminal-bg: #060b14;
+            --panel-bg: #0c1220;
+            --panel-border: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ── CRT scanline overlay ── */
+        .crt-overlay {
+            pointer-events: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03) 0px,
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        /* ── Terminal layout ── */
+        .terminal-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1px;
+            background: var(--panel-border);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            min-height: 520px;
+        }
+
+        /* ── Top bar — agents ── */
+        .agents-bar {
+            grid-column: 1 / -1;
+            background: var(--panel-bg);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 14px 20px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .agent-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+
+        .agent-chip.active { color: var(--text-primary); }
+
+        .agent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: background 0.3s, box-shadow 0.3s;
+            flex-shrink: 0;
+        }
+
+        .agent-dot.blue    { background: var(--agent-blue); }
+        .agent-dot.orange  { background: var(--agent-orange); }
+        .agent-dot.purple  { background: var(--agent-purple); }
+        .agent-dot.green   { background: var(--agent-green); }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+            50%      { box-shadow: 0 0 8px 3px currentColor; }
+        }
+
+        .agent-dot.pulse {
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        .agent-dot.blue.pulse  { color: var(--agent-blue); }
+        .agent-dot.orange.pulse { color: var(--agent-orange); }
+        .agent-dot.purple.pulse { color: var(--agent-purple); }
+        .agent-dot.green.pulse  { color: var(--agent-green); }
+
+        .agent-role {
+            font-size: 0.88em;
+            opacity: 0.6;
+            margin-left: 2px;
+        }
+
+        /* ── Main terminal ── */
+        .terminal-main {
+            background: var(--terminal-bg);
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.82em;
+            line-height: 1.7;
+            overflow-y: auto;
+            max-height: 480px;
+            position: relative;
+        }
+
+        .terminal-main::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--terminal-bg), transparent);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .terminal-main.scrolled::before { opacity: 1; }
+
+        .terminal-header {
+            color: var(--terminal-amber);
+            margin-bottom: 12px;
+            white-space: pre;
+        }
+
+        .terminal-line {
+            color: var(--terminal-green);
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .terminal-line.cmd { color: var(--terminal-amber); }
+        .terminal-line.info { color: var(--text-secondary); }
+        .terminal-line.agent { color: var(--agent-blue); }
+        .terminal-line.warn { color: var(--accent-orange); }
+        .terminal-line.success { color: var(--agent-green); }
+        .terminal-line.dim { color: var(--text-muted); }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--terminal-green);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0; }
+        }
+
+        /* ── Side panel — activity log ── */
+        .activity-panel {
+            background: var(--panel-bg);
+            padding: 16px;
+            overflow-y: auto;
+            max-height: 480px;
+        }
+
+        .activity-title {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .activity-entry {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .activity-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .activity-dot.blue   { background: var(--agent-blue); }
+        .activity-dot.orange { background: var(--agent-orange); }
+        .activity-dot.purple { background: var(--agent-purple); }
+        .activity-dot.green  { background: var(--agent-green); }
+
+        .activity-text {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .activity-text .agent-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-time {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ── Run button ── */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .terminal-title {
+            font-family: var(--font-display);
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+        }
+
+        .btn-scan {
+            font-family: var(--font-mono);
+            font-size: 0.82em;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, var(--agent-green) 0%, #3ab83a 100%);
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-scan:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-scan:active { transform: translateY(0); }
+
+        .btn-scan:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .terminal-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .terminal-main,
+            .activity-panel {
+                max-height: 360px;
+            }
+
+            .agents-bar {
+                gap: 16px;
+                padding: 12px 14px;
+            }
+
+            .agent-chip {
+                font-size: 0.7em;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .btn-scan { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- CRT scanlines -->
+<div class="crt-overlay"></div>
+
+<!-- Sticky nav -->
+<nav class="demo-nav">
+    <a href="/" class="demo-back">&larr; Portfolio</a>
+    <img src="/assets/img/nv-logo-small.svg" alt="NV" class="demo-logo">
+</nav>
+
+<!-- Disclaimer -->
+<div class="demo-disclaimer">Interactive Demo &mdash; Simulated Data</div>
+
+<!-- Main content -->
+<div class="demo-content">
+
+    <div class="controls-bar">
+        <div class="terminal-title">Baron AI &mdash; Mr. Smith Console</div>
+        <button class="btn-scan" id="btnScan" onclick="runScan()">&#9654; Run Scan</button>
+    </div>
+
+    <div class="terminal-wrapper">
+
+        <!-- Agent status bar -->
+        <div class="agents-bar">
+            <div class="agent-chip" id="agent-smith">
+                <span class="agent-dot blue" id="dot-smith"></span>
+                Mr. Smith <span class="agent-role">Orchestrator</span>
+            </div>
+            <div class="agent-chip" id="agent-lily">
+                <span class="agent-dot orange" id="dot-lily"></span>
+                Lily <span class="agent-role">Strategy</span>
+            </div>
+            <div class="agent-chip" id="agent-gemma">
+                <span class="agent-dot purple" id="dot-gemma"></span>
+                Gemma <span class="agent-role">Humanizer</span>
+            </div>
+            <div class="agent-chip" id="agent-qwen">
+                <span class="agent-dot green" id="dot-qwen"></span>
+                QWEN <span class="agent-role">Code Gen</span>
+            </div>
+        </div>
+
+        <!-- Terminal output -->
+        <div class="terminal-main" id="terminal">
+            <div class="terminal-header">BARON AI — Multi-Agent Security Platform v2.4.1
+===================================================</div>
+            <div class="terminal-line info">Awaiting operator command...</div>
+            <div class="terminal-line dim"><span class="cursor-blink"></span></div>
+        </div>
+
+        <!-- Activity log -->
+        <div class="activity-panel" id="activityLog">
+            <div class="activity-title">Agent Activity</div>
+            <div id="activityEntries">
+                <div class="activity-entry" style="animation-delay:0s">
+                    <div class="activity-dot blue"></div>
+                    <div class="activity-text">
+                        <span class="agent-name">System</span> initialized. All agents standing by.
+                        <div class="activity-time">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- About footer -->
+<footer class="demo-about">
+    <h2>About This Project</h2>
+    <p>
+        Baron AI is a multi-agent security orchestration platform where autonomous agents
+        collaborate to perform reconnaissance, vulnerability assessment, and threat analysis.
+        Mr. Smith coordinates a team of specialized agents — each responsible for strategy,
+        social engineering analysis, and code generation — to deliver comprehensive security
+        intelligence.
+    </p>
+    <p>
+        This demo simulates the agent coordination pipeline with canned scan data.
+        No real network scanning or penetration testing is performed.
+    </p>
+    <div class="demo-tags">
+        <span class="demo-tag">Multi-Agent</span>
+        <span class="demo-tag">LLM Orchestration</span>
+        <span class="demo-tag">Python</span>
+        <span class="demo-tag">Security</span>
+        <span class="demo-tag">Nmap</span>
+        <span class="demo-tag">Reconnaissance</span>
+        <span class="demo-tag">RAG</span>
+        <span class="demo-tag">CrewAI</span>
+    </div>
+</footer>
+
+<script>
+(function () {
+    "use strict";
+
+    var terminal = document.getElementById("terminal");
+    var activityEntries = document.getElementById("activityEntries");
+    var btnScan = document.getElementById("btnScan");
+    var scanning = false;
+
+    // ── Canned scan data ──
+    var scanScript = [
+        // [delay_ms, type, text, agentActivation, activityEntry]
+        // agentActivation: { id: "smith"|"lily"|"gemma"|"qwen", active: bool, pulse: bool }
+        // activityEntry: { agent: name, color: class, text: desc }
+        { d: 0,    t: "cmd",     s: "> mr_smith --init-scan --target 192.168.1.0/24 --type recon",
+                   agent: {id:"smith", active:true, pulse:true},
+                   log: {a:"Mr. Smith", c:"blue", t:"Initiating reconnaissance scan..."} },
+
+        { d: 800,  t: "agent",   s: "[Mr. Smith] Acknowledged. Initializing multi-agent recon pipeline." },
+        { d: 600,  t: "info",    s: "[Mr. Smith] Target:    192.168.1.0/24 (Demo Network)" },
+        { d: 300,  t: "info",    s: "[Mr. Smith] Scan Type: Reconnaissance" },
+        { d: 300,  t: "info",    s: "[Mr. Smith] Timestamp: " + new Date().toISOString() },
+        { d: 500,  t: "dim",     s: "─".repeat(52) },
+
+        { d: 600,  t: "agent",   s: "[Mr. Smith] Delegating network mapping to QWEN...",
+                   agent: {id:"qwen", active:true, pulse:true},
+                   log: {a:"Mr. Smith", c:"blue", t:"Delegated network mapping to QWEN."} },
+
+        { d: 800,  t: "",        s: "[QWEN] Generating nmap command sequence...",
+                   log: {a:"QWEN", c:"green", t:"Building nmap command payload."} },
+        { d: 500,  t: "cmd",     s: "  $ nmap -sS -sV -O -T4 192.168.1.0/24 --top-ports 1000" },
+        { d: 400,  t: "dim",     s: "  [exec] Starting scan on 256 hosts..." },
+
+        { d: 1200, t: "",        s: "  [QWEN] Scan running... 64/256 hosts checked",
+                   log: {a:"QWEN", c:"green", t:"Scan progress: 25%"} },
+        { d: 1000, t: "",        s: "  [QWEN] Scan running... 128/256 hosts checked" },
+        { d: 1000, t: "",        s: "  [QWEN] Scan running... 192/256 hosts checked" },
+        { d: 1000, t: "success", s: "  [QWEN] Scan complete — 256/256 hosts processed.",
+                   agent: {id:"qwen", active:true, pulse:false},
+                   log: {a:"QWEN", c:"green", t:"Network scan complete."} },
+
+        { d: 500,  t: "dim",     s: "─".repeat(52) },
+
+        { d: 600,  t: "agent",   s: "[Mr. Smith] Routing results to Lily for strategic analysis...",
+                   agent: {id:"lily", active:true, pulse:true},
+                   log: {a:"Mr. Smith", c:"blue", t:"Routing scan data to Lily."} },
+
+        { d: 800,  t: "",        s: "[Lily] Received scan data. Analyzing host topology...",
+                   log: {a:"Lily", c:"orange", t:"Analyzing network topology."} },
+        { d: 600,  t: "",        s: "[Lily] 3 live hosts discovered:" },
+        { d: 300,  t: "success", s: "  HOST 192.168.1.1    — Gateway   (Linux 5.x)" },
+        { d: 300,  t: "success", s: "  HOST 192.168.1.42   — Webserver (Ubuntu 22.04, Apache 2.4)" },
+        { d: 300,  t: "success", s: "  HOST 192.168.1.105  — Database  (Debian 11, PostgreSQL 14)" },
+
+        { d: 600,  t: "",        s: "[Lily] 12 open ports identified across hosts.",
+                   log: {a:"Lily", c:"orange", t:"12 open ports identified."} },
+        { d: 300,  t: "info",    s: "  192.168.1.1   : 22/ssh, 80/http, 443/https" },
+        { d: 300,  t: "info",    s: "  192.168.1.42  : 22/ssh, 80/http, 443/https, 8080/http-alt, 3306/mysql" },
+        { d: 300,  t: "info",    s: "  192.168.1.105 : 22/ssh, 5432/postgresql, 9090/prometheus, 6379/redis" },
+
+        { d: 500,  t: "dim",     s: "─".repeat(52) },
+
+        { d: 600,  t: "",        s: "[Lily] Flagging potential vulnerabilities...",
+                   agent: {id:"lily", active:true, pulse:true},
+                   log: {a:"Lily", c:"orange", t:"Analyzing for vulnerabilities."} },
+        { d: 800,  t: "warn",    s: "  [!] VULN-001: 192.168.1.42:8080 — HTTP alt exposed, no TLS" },
+        { d: 600,  t: "warn",    s: "  [!] VULN-002: 192.168.1.105:6379 — Redis port open (no auth detected)",
+                   log: {a:"Lily", c:"orange", t:"2 potential vulnerabilities flagged."} },
+
+        { d: 500,  t: "dim",     s: "─".repeat(52) },
+
+        { d: 600,  t: "agent",   s: "[Mr. Smith] Sending to Gemma for report formatting...",
+                   agent: {id:"gemma", active:true, pulse:true},
+                   log: {a:"Mr. Smith", c:"blue", t:"Report formatting delegated to Gemma."} },
+
+        { d: 1000, t: "",        s: "[Gemma] Compiling human-readable intelligence report...",
+                   log: {a:"Gemma", c:"purple", t:"Generating executive summary."} },
+
+        { d: 800,  t: "dim",     s: "─".repeat(52) },
+        { d: 200,  t: "success", s: "" },
+        { d: 100,  t: "success", s: "  ╔══════════════════════════════════════════════╗" },
+        { d: 100,  t: "success", s: "  ║        RECON SCAN — SUMMARY REPORT          ║" },
+        { d: 100,  t: "success", s: "  ╠══════════════════════════════════════════════╣" },
+        { d: 100,  t: "success", s: "  ║  Target:          192.168.1.0/24             ║" },
+        { d: 100,  t: "success", s: "  ║  Hosts Alive:     3 / 256                    ║" },
+        { d: 100,  t: "success", s: "  ║  Open Ports:      12                         ║" },
+        { d: 100,  t: "success", s: "  ║  Vulnerabilities: 2 (Medium Severity)        ║" },
+        { d: 100,  t: "success", s: "  ║  Scan Duration:   14.7s                      ║" },
+        { d: 100,  t: "success", s: "  ║  Status:          COMPLETE                   ║" },
+        { d: 100,  t: "success", s: "  ╚══════════════════════════════════════════════╝" },
+        { d: 200,  t: "success", s: "",
+                   agent: {id:"gemma", active:true, pulse:false},
+                   log: {a:"Gemma", c:"purple", t:"Report delivered to operator."} },
+
+        { d: 400,  t: "agent",   s: "[Mr. Smith] All agents reporting complete. Awaiting next command.",
+                   log: {a:"Mr. Smith", c:"blue", t:"Pipeline complete. Standing by."} },
+        { d: 200,  t: "dim",     s: "" },
+    ];
+
+    // ── Helpers ──
+    function getTimeStr() {
+        var d = new Date();
+        return d.toTimeString().slice(0, 8);
+    }
+
+    function activateAgent(cfg) {
+        if (!cfg) return;
+        var dot = document.getElementById("dot-" + cfg.id);
+        var chip = document.getElementById("agent-" + cfg.id);
+        if (!dot || !chip) return;
+
+        var colorMap = { smith: "blue", lily: "orange", gemma: "purple", qwen: "green" };
+        var color = colorMap[cfg.id] || "blue";
+
+        if (cfg.active) {
+            dot.classList.add(color);
+            chip.classList.add("active");
+        }
+        if (cfg.pulse) {
+            dot.classList.add("pulse");
+        } else {
+            dot.classList.remove("pulse");
+        }
+    }
+
+    function addActivity(cfg) {
+        if (!cfg) return;
+        var entry = document.createElement("div");
+        entry.className = "activity-entry";
+        entry.innerHTML =
+            '<div class="activity-dot ' + cfg.c + '"></div>' +
+            '<div class="activity-text">' +
+            '<span class="agent-name">' + cfg.a + '</span> ' + cfg.t +
+            '<div class="activity-time">' + getTimeStr() + '</div>' +
+            '</div>';
+        activityEntries.appendChild(entry);
+        var panel = document.getElementById("activityLog");
+        panel.scrollTop = panel.scrollHeight;
+    }
+
+    // ── Typewriter for a single line ──
+    function typewriteLine(container, text, charDelay, callback) {
+        if (!text || text.length === 0) {
+            if (callback) callback();
+            return;
+        }
+        var i = 0;
+        var span = document.createElement("span");
+        container.appendChild(span);
+
+        function tick() {
+            if (i < text.length) {
+                span.textContent += text[i];
+                i++;
+                terminal.scrollTop = terminal.scrollHeight;
+                setTimeout(tick, charDelay);
+            } else {
+                if (callback) callback();
+            }
+        }
+        tick();
+    }
+
+    // ── Run the scan ──
+    function processLine(index) {
+        if (index >= scanScript.length) {
+            // Done
+            scanning = false;
+            btnScan.disabled = false;
+            btnScan.textContent = "\u25B6 Run Scan";
+            // Deactivate pulses
+            var dots = document.querySelectorAll(".agent-dot");
+            for (var d = 0; d < dots.length; d++) {
+                dots[d].classList.remove("pulse");
+            }
+            // Add cursor back
+            var cursorLine = document.createElement("div");
+            cursorLine.className = "terminal-line dim";
+            cursorLine.innerHTML = '<span class="cursor-blink"></span>';
+            terminal.appendChild(cursorLine);
+            terminal.scrollTop = terminal.scrollHeight;
+            return;
+        }
+
+        var step = scanScript[index];
+
+        // Activate agent
+        activateAgent(step.agent);
+
+        // Add activity log entry
+        addActivity(step.log);
+
+        // Create terminal line
+        var lineDiv = document.createElement("div");
+        lineDiv.className = "terminal-line" + (step.t ? " " + step.t : "");
+        terminal.appendChild(lineDiv);
+
+        // Determine char speed: commands/agent lines are slower, info lines faster
+        var charSpeed = step.t === "cmd" ? 30 : (step.t === "dim" ? 5 : 40);
+        if (step.s.length > 50) charSpeed = 20;
+        if (step.s.length > 80) charSpeed = 10;
+        if (step.t === "success") charSpeed = 8;
+
+        typewriteLine(lineDiv, step.s, charSpeed, function () {
+            var nextDelay = index + 1 < scanScript.length ? scanScript[index + 1].d : 0;
+            setTimeout(function () {
+                processLine(index + 1);
+            }, nextDelay);
+        });
+    }
+
+    window.runScan = function () {
+        if (scanning) return;
+        scanning = true;
+        btnScan.disabled = true;
+        btnScan.textContent = "Scanning...";
+
+        // Clear terminal
+        terminal.innerHTML =
+            '<div class="terminal-header">BARON AI \u2014 Multi-Agent Security Platform v2.4.1\n===================================================</div>';
+
+        // Clear activity log
+        activityEntries.innerHTML = "";
+
+        // Reset agent chips
+        var allDots = document.querySelectorAll(".agent-dot");
+        var allChips = document.querySelectorAll(".agent-chip");
+        for (var i = 0; i < allDots.length; i++) {
+            allDots[i].classList.remove("blue", "orange", "purple", "green", "pulse");
+        }
+        for (var j = 0; j < allChips.length; j++) {
+            allChips[j].classList.remove("active");
+        }
+
+        addActivity({ a: "System", c: "blue", t: "Scan initiated by operator." });
+
+        setTimeout(function () { processLine(0); }, 400);
+    };
+
+    // Scroll shadow on terminal
+    terminal.addEventListener("scroll", function () {
+        terminal.classList.toggle("scrolled", terminal.scrollTop > 10);
+    });
+})();
+</script>
+
+</body>
+</html>
