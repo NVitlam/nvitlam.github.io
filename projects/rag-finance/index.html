@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid RAG Financial Analysis — Demo</title>
+    <link rel="stylesheet" href="/assets/css/demo-base.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ── Color Tokens ── */
+        :root {
+            --bg-primary: #0a0f1a;
+            --accent-blue: #4a7ca5;
+            --text-primary: #e0e4ec;
+            --text-secondary: #7a8599;
+            --accent-green: #66bb6a;
+            --doc-bg: #faf8f4;
+            --doc-text: #1a1a1a;
+            --doc-muted: #5a5a5a;
+            --doc-rule: #c8c2b6;
+            --pipeline-bg: rgba(15, 22, 40, 0.6);
+        }
+
+        /* ── Two-Panel Layout ── */
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* ── Document Preview (Left Panel) ── */
+        .doc-panel {
+            background: var(--doc-bg);
+            border-radius: var(--radius-md);
+            padding: 32px 28px;
+            color: var(--doc-text);
+            font-family: 'Times New Roman', 'Georgia', serif;
+            font-size: 0.82em;
+            line-height: 1.55;
+            max-height: 520px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .doc-panel::-webkit-scrollbar { width: 6px; }
+        .doc-panel::-webkit-scrollbar-track { background: transparent; }
+        .doc-panel::-webkit-scrollbar-thumb { background: var(--doc-rule); border-radius: 3px; }
+
+        .doc-header {
+            text-align: center;
+            border-bottom: 2px solid var(--doc-text);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .doc-header h1 {
+            font-size: 1.15em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .doc-header .doc-subtitle {
+            font-size: 0.88em;
+            color: var(--doc-muted);
+        }
+
+        .doc-header .doc-filing-info {
+            font-size: 0.78em;
+            color: var(--doc-muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .doc-section {
+            margin-bottom: 18px;
+        }
+
+        .doc-section h2 {
+            font-size: 0.92em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--doc-rule);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+
+        .doc-section p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.92em;
+        }
+
+        .doc-table th,
+        .doc-table td {
+            border: 1px solid var(--doc-rule);
+            padding: 4px 8px;
+            text-align: right;
+        }
+
+        .doc-table th {
+            background: #ede9e0;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .doc-table td:first-child {
+            text-align: left;
+        }
+
+        .doc-page-num {
+            text-align: center;
+            font-size: 0.75em;
+            color: var(--doc-muted);
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--doc-rule);
+        }
+
+        .doc-highlight {
+            background: rgba(74, 124, 165, 0.25);
+            border-left: 3px solid var(--accent-blue);
+            padding: 2px 6px;
+            transition: background 0.4s ease;
+        }
+
+        /* ── Pipeline Panel (Right Panel) ── */
+        .pipeline-panel {
+            background: var(--pipeline-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pipeline-title {
+            font-family: var(--font-display);
+            font-size: 0.9em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .pipeline-stages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stage {
+            background: rgba(10, 15, 26, 0.5);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            opacity: 0.3;
+            transform: translateY(6px);
+            transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .stage.active {
+            opacity: 1;
+            transform: translateY(0);
+            border-color: var(--accent-blue);
+        }
+
+        .stage.complete {
+            opacity: 0.85;
+            transform: translateY(0);
+            border-color: rgba(102, 187, 106, 0.4);
+        }
+
+        .stage-label {
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stage.active .stage-label { color: var(--accent-blue); }
+        .stage.complete .stage-label { color: var(--accent-green); }
+
+        .stage-detail {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--text-muted);
+            min-height: 18px;
+        }
+
+        .stage.active .stage-detail,
+        .stage.complete .stage-detail { color: var(--text-secondary); }
+
+        /* ── Progress Bar ── */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            transition: width 1s ease-in-out;
+        }
+
+        .stage.active .progress-fill { width: 100%; }
+
+        /* ── Graph SVG ── */
+        .graph-container {
+            margin-top: 6px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .graph-container svg { width: 180px; height: 60px; }
+
+        .graph-node {
+            fill: var(--accent-blue);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .graph-edge {
+            stroke: rgba(74, 124, 165, 0.4);
+            stroke-width: 1.5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stage.active .graph-node,
+        .stage.complete .graph-node { opacity: 1; }
+
+        .stage.active .graph-edge,
+        .stage.complete .graph-edge { opacity: 1; }
+
+        @keyframes pulse-node {
+            0%, 100% { r: 4; }
+            50% { r: 6; }
+        }
+
+        .stage.active .graph-node { animation: pulse-node 0.8s ease-in-out infinite; }
+
+        /* ── Search animation ── */
+        .search-dots {
+            display: inline-flex;
+            gap: 3px;
+            margin-left: 4px;
+        }
+
+        .search-dots span {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            animation: dot-bounce 1s ease-in-out infinite;
+        }
+
+        .search-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .search-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes dot-bounce {
+            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* ── Answer Box ── */
+        .answer-box {
+            background: rgba(10, 15, 26, 0.7);
+            border: 1px solid rgba(74, 124, 165, 0.3);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 12px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .answer-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .answer-label {
+            font-family: var(--font-mono);
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        .answer-text {
+            font-size: 0.88em;
+            color: var(--text-primary);
+            line-height: 1.65;
+            margin-bottom: 12px;
+        }
+
+        .answer-sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .source-tag {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            color: var(--accent-blue);
+            background: rgba(74, 124, 165, 0.12);
+            border: 1px solid rgba(74, 124, 165, 0.2);
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+
+        /* ── Question Buttons ── */
+        .questions-section {
+            margin-bottom: 24px;
+        }
+
+        .questions-label {
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .question-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .question-btn {
+            font-family: var(--font-body);
+            font-size: 0.82em;
+            color: var(--text-primary);
+            background: rgba(15, 22, 40, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .question-btn:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 124, 165, 0.08);
+        }
+
+        .question-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .question-btn.selected {
+            border-color: var(--accent-blue);
+            background: rgba(74, 124, 165, 0.12);
+        }
+
+        /* ── Status Indicators ── */
+        .status-icon {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .stage.active .status-icon {
+            background: var(--accent-blue);
+            box-shadow: 0 0 6px rgba(74, 124, 165, 0.5);
+            animation: glow 1.2s ease-in-out infinite;
+        }
+
+        .stage.complete .status-icon {
+            background: var(--accent-green);
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 4px rgba(74, 124, 165, 0.3); }
+            50% { box-shadow: 0 0 10px rgba(74, 124, 165, 0.7); }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+
+            .doc-panel {
+                max-height: 360px;
+            }
+
+            .question-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Sticky Nav ── -->
+<nav class="demo-nav">
+    <a href="/" class="demo-back">&#8592; Portfolio</a>
+    <img src="/assets/img/nv-logo-small.svg" alt="NV" class="demo-logo">
+</nav>
+
+<!-- ── Disclaimer ── -->
+<div class="demo-disclaimer">Interactive Demo &mdash; Simulated Data</div>
+
+<!-- ── Main Content ── -->
+<div class="demo-content">
+
+    <!-- Question Buttons -->
+    <div class="questions-section">
+        <div class="questions-label">Select a query</div>
+        <div class="question-buttons">
+            <button class="question-btn" data-q="0">What were the total revenues for Q3?</button>
+            <button class="question-btn" data-q="1">What are the key risk factors mentioned?</button>
+            <button class="question-btn" data-q="2">How did operating expenses change year-over-year?</button>
+        </div>
+    </div>
+
+    <!-- Two-Panel Layout -->
+    <div class="panels">
+
+        <!-- Left: Document Preview -->
+        <div class="doc-panel">
+            <div class="doc-header">
+                <h1>United States Securities and Exchange Commission</h1>
+                <div class="doc-subtitle">Form 10-Q &mdash; Quarterly Report</div>
+                <div class="doc-filing-info">Filed: November 14, 2024 &bull; CIK: 0001923847</div>
+            </div>
+
+            <div class="doc-section">
+                <h2>Part I &mdash; Financial Information</h2>
+                <h2 style="font-size:0.85em; border:none; padding:0; margin-bottom:6px;">Item 1. Financial Statements</h2>
+                <p><strong>Demo Corp, Inc.</strong><br>Condensed Consolidated Statements of Operations<br>(In thousands, except per share data) (Unaudited)</p>
+
+                <table class="doc-table">
+                    <tr><th></th><th>Q3 2024</th><th>Q3 2023</th></tr>
+                    <tr><td>Net revenues</td><td id="rev-cell">$482,300</td><td>$413,600</td></tr>
+                    <tr><td>Cost of revenues</td><td>$271,400</td><td>$239,100</td></tr>
+                    <tr><td><strong>Gross profit</strong></td><td><strong>$210,900</strong></td><td><strong>$174,500</strong></td></tr>
+                    <tr><td>Operating expenses</td><td id="opex-cell">$148,200</td><td id="opex-prev-cell">$121,800</td></tr>
+                    <tr><td>R&amp;D expenses</td><td>$62,100</td><td>$51,400</td></tr>
+                    <tr><td>SG&amp;A expenses</td><td>$86,100</td><td>$70,400</td></tr>
+                    <tr><td><strong>Operating income</strong></td><td><strong>$62,700</strong></td><td><strong>$52,700</strong></td></tr>
+                    <tr><td>Net income</td><td>$47,200</td><td>$39,100</td></tr>
+                    <tr><td>EPS (diluted)</td><td>$1.84</td><td>$1.53</td></tr>
+                </table>
+                <div class="doc-page-num">Page 4 of 47</div>
+            </div>
+
+            <div class="doc-section">
+                <h2>Item 1A. Risk Factors</h2>
+                <p id="risk-p1">The Company operates in highly competitive markets. Changes in customer demand, technological developments, and pricing pressures from competitors could adversely impact our revenues and margins. There can be no assurance that Demo Corp will maintain its current market share in the enterprise analytics segment.</p>
+                <p id="risk-p2">Our operations are subject to regulatory requirements across multiple jurisdictions. Changes in data privacy laws, including the evolving interpretation of GDPR, CCPA, and similar frameworks, may require significant modifications to our data processing infrastructure and increase compliance costs.</p>
+                <p id="risk-p3">The Company relies on third-party cloud infrastructure providers. Service disruptions, security breaches, or significant price increases by these providers could materially affect our ability to deliver services and impact our cost structure.</p>
+                <div class="doc-page-num">Page 12 of 47</div>
+            </div>
+
+            <div class="doc-section">
+                <h2>Item 2. Management&rsquo;s Discussion &amp; Analysis</h2>
+                <p id="mda-p1">Total net revenues for Q3 2024 increased 16.6% year-over-year to $482.3 million, driven primarily by strong growth in our cloud platform segment, which grew 28.4% to $214.7 million. Enterprise license revenues declined modestly by 3.1% to $267.6 million, consistent with our ongoing transition to subscription-based offerings.</p>
+                <p id="mda-p2">Total operating expenses for the quarter were $148.2 million, an increase of 21.7% compared to $121.8 million in Q3 2023. This increase was driven primarily by higher R&amp;D investment in our AI-powered analytics capabilities ($62.1 million vs. $51.4 million) and increased SG&amp;A spending to support international expansion ($86.1 million vs. $70.4 million). As a percentage of revenue, operating expenses were 30.7% compared to 29.4% in the prior-year period.</p>
+                <div class="doc-page-num">Page 18 of 47</div>
+            </div>
+        </div>
+
+        <!-- Right: Pipeline Panel -->
+        <div class="pipeline-panel">
+            <div class="pipeline-title">RAG Analysis Pipeline</div>
+            <div class="pipeline-stages">
+
+                <div class="stage" id="stage-parse">
+                    <div class="stage-label"><span class="status-icon"></span> Stage 1 &mdash; Document Parsing</div>
+                    <div class="stage-detail" id="detail-parse">Waiting...</div>
+                    <div class="progress-bar"><div class="progress-fill" id="parse-progress"></div></div>
+                </div>
+
+                <div class="stage" id="stage-chunk">
+                    <div class="stage-label"><span class="status-icon"></span> Stage 2 &mdash; Chunk Extraction</div>
+                    <div class="stage-detail" id="detail-chunk">Waiting...</div>
+                </div>
+
+                <div class="stage" id="stage-graph">
+                    <div class="stage-label"><span class="status-icon"></span> Stage 3 &mdash; Retrieval Graph</div>
+                    <div class="stage-detail" id="detail-graph">Waiting...</div>
+                    <div class="graph-container">
+                        <svg viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Edges -->
+                            <line class="graph-edge" x1="30" y1="20" x2="70" y2="40"/>
+                            <line class="graph-edge" x1="30" y1="20" x2="90" y2="15"/>
+                            <line class="graph-edge" x1="70" y1="40" x2="110" y2="25"/>
+                            <line class="graph-edge" x1="90" y1="15" x2="110" y2="25"/>
+                            <line class="graph-edge" x1="110" y1="25" x2="150" y2="35"/>
+                            <line class="graph-edge" x1="90" y1="15" x2="150" y2="35"/>
+                            <line class="graph-edge" x1="70" y1="40" x2="130" y2="50"/>
+                            <line class="graph-edge" x1="130" y1="50" x2="150" y2="35"/>
+                            <!-- Nodes -->
+                            <circle class="graph-node" cx="30" cy="20" r="4"/>
+                            <circle class="graph-node" cx="70" cy="40" r="4"/>
+                            <circle class="graph-node" cx="90" cy="15" r="4"/>
+                            <circle class="graph-node" cx="110" cy="25" r="4"/>
+                            <circle class="graph-node" cx="130" cy="50" r="4"/>
+                            <circle class="graph-node" cx="150" cy="35" r="4"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="stage" id="stage-query">
+                    <div class="stage-label"><span class="status-icon"></span> Stage 4 &mdash; Semantic Search</div>
+                    <div class="stage-detail" id="detail-query">Waiting...</div>
+                </div>
+
+                <div class="stage" id="stage-retrieve">
+                    <div class="stage-label"><span class="status-icon"></span> Stage 5 &mdash; Retrieval</div>
+                    <div class="stage-detail" id="detail-retrieve">Waiting...</div>
+                </div>
+
+            </div>
+
+            <!-- Answer -->
+            <div class="answer-box" id="answer-box">
+                <div class="answer-label">Generated Answer</div>
+                <div class="answer-text" id="answer-text"></div>
+                <div class="answer-sources" id="answer-sources"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── About Footer ── -->
+<footer class="demo-about">
+    <h2>About This Project</h2>
+    <p>
+        This demo illustrates a hybrid Retrieval-Augmented Generation pipeline designed for
+        financial document analysis. The system combines dense vector retrieval with graph-based
+        chunk linking to surface the most relevant passages from SEC filings, earnings reports,
+        and corporate disclosures. Evaluation is handled via DeepEval metrics to ensure factual
+        grounding and citation accuracy.
+    </p>
+    <p>
+        All data shown is fictional and generated for demonstration purposes.
+        No real financial instruments or companies are referenced.
+    </p>
+    <div class="demo-tags">
+        <span class="demo-tag">RAG</span>
+        <span class="demo-tag">Graph Retrieval</span>
+        <span class="demo-tag">DeepEval</span>
+        <span class="demo-tag">Financial Analysis</span>
+        <span class="demo-tag">LLM</span>
+    </div>
+</footer>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ── Canned Answers ── */
+    const answers = [
+        {
+            text: 'Total net revenues for Demo Corp in Q3 2024 were $482.3 million, representing a 16.6% increase compared to $413.6 million in Q3 2023. Cloud platform revenues grew 28.4% to $214.7 million, while enterprise license revenues declined 3.1% to $267.6 million, reflecting the company\'s ongoing shift toward subscription-based models.',
+            sources: ['Page 4 — Financial Statements', 'Page 18 — MD&A Revenue Discussion'],
+            highlights: ['rev-cell', 'mda-p1']
+        },
+        {
+            text: 'The filing identifies three principal risk factors: (1) competitive pressures in the enterprise analytics market that could erode market share and compress margins; (2) evolving data privacy regulations (GDPR, CCPA, and related frameworks) requiring ongoing infrastructure modifications and increasing compliance costs; and (3) dependency on third-party cloud infrastructure providers, exposing the company to service disruption and pricing risks.',
+            sources: ['Page 12 — Risk Factor 1: Market Competition', 'Page 12 — Risk Factor 2: Regulatory', 'Page 12 — Risk Factor 3: Infrastructure'],
+            highlights: ['risk-p1', 'risk-p2', 'risk-p3']
+        },
+        {
+            text: 'Total operating expenses rose 21.7% year-over-year, from $121.8 million in Q3 2023 to $148.2 million in Q3 2024. R&D spending increased 20.8% ($51.4M to $62.1M) driven by AI analytics investment, while SG&A grew 22.3% ($70.4M to $86.1M) to support international expansion. As a share of revenue, operating expenses edged up from 29.4% to 30.7%.',
+            sources: ['Page 4 — Financial Statements', 'Page 18 — MD&A Operating Expenses'],
+            highlights: ['opex-cell', 'opex-prev-cell', 'mda-p2']
+        }
+    ];
+
+    const stages = ['stage-parse', 'stage-chunk', 'stage-graph', 'stage-query', 'stage-retrieve'];
+    const details = ['detail-parse', 'detail-chunk', 'detail-graph', 'detail-query', 'detail-retrieve'];
+    let running = false;
+
+    /* ── Helpers ── */
+    function $(id) { return document.getElementById(id); }
+    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function resetPipeline() {
+        stages.forEach(id => {
+            const el = $(id);
+            el.classList.remove('active', 'complete');
+        });
+        details.forEach(id => { $(id).textContent = 'Waiting...'; });
+        $('answer-box').classList.remove('visible');
+        $('answer-text').textContent = '';
+        $('answer-sources').innerHTML = '';
+        // Clear highlights
+        document.querySelectorAll('.doc-highlight').forEach(el => el.classList.remove('doc-highlight'));
+    }
+
+    function activateStage(i, detail) {
+        const el = $(stages[i]);
+        el.classList.add('active');
+        $(details[i]).innerHTML = detail;
+    }
+
+    function completeStage(i, detail) {
+        const el = $(stages[i]);
+        el.classList.remove('active');
+        el.classList.add('complete');
+        if (detail) $(details[i]).innerHTML = detail;
+    }
+
+    /* ── Pipeline Runner ── */
+    async function runPipeline(qi) {
+        if (running) return;
+        running = true;
+
+        const btns = document.querySelectorAll('.question-btn');
+        btns.forEach(b => b.disabled = true);
+        btns[qi].classList.add('selected');
+
+        resetPipeline();
+        await wait(200);
+
+        // Stage 1: Parse
+        activateStage(0, 'Parsing document...');
+        await wait(1000);
+        completeStage(0, '47 pages parsed &bull; 12 tables detected');
+
+        // Stage 2: Chunk
+        await wait(300);
+        activateStage(1, 'Extracting chunks...');
+        await wait(900);
+        completeStage(1, '47 chunks identified &bull; avg 312 tokens');
+
+        // Stage 3: Graph
+        await wait(300);
+        activateStage(2, 'Building retrieval graph...');
+        await wait(1200);
+        completeStage(2, '6 nodes &bull; 8 edges &bull; 3 clusters');
+
+        // Stage 4: Query
+        await wait(300);
+        activateStage(3, 'Querying<span class="search-dots"><span></span><span></span><span></span></span>');
+        await wait(1100);
+        completeStage(3, 'Embedding similarity computed');
+
+        // Stage 5: Retrieve
+        await wait(300);
+        activateStage(4, 'Retrieving relevant chunks...');
+        await wait(800);
+        completeStage(4, 'Retrieved 4 relevant chunks &bull; top score: 0.94');
+
+        // Highlight sources in document
+        const answer = answers[qi];
+        answer.highlights.forEach(id => {
+            const el = $(id);
+            if (el) el.classList.add('doc-highlight');
+        });
+
+        // Show answer
+        await wait(400);
+        $('answer-text').textContent = answer.text;
+        $('answer-sources').innerHTML = answer.sources
+            .map(s => '<span class="source-tag">' + s + '</span>')
+            .join('');
+        $('answer-box').classList.add('visible');
+
+        running = false;
+        btns.forEach(b => b.disabled = false);
+    }
+
+    /* ── Bind Buttons ── */
+    document.querySelectorAll('.question-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.question-btn').forEach(b => b.classList.remove('selected'));
+            runPipeline(parseInt(this.dataset.q, 10));
+        });
+    });
+
+})();
+</script>
+</body>
+</html>
