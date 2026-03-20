@@ -1,0 +1,74 @@
+[
+    {
+        "slug": "nira",
+        "title": "NIRA",
+        "subtitle": "Natural IVF Response Assistant",
+        "description": "AI-powered patient support for IVF treatment queries in a healthcare-compliant framework.",
+        "longDescription": "",
+        "tags": ["Healthcare AI", "NLP", "Patient Support", "Medical Compliance"],
+        "context": "BGU & Soroka Medical Hackathon \u00b7 2025",
+        "hasDemo": true,
+        "featured": false,
+        "order": 1
+    },
+    {
+        "slug": "baron-ai",
+        "title": "Baron AI / Mr. Smith",
+        "subtitle": "AI Security Platform",
+        "description": "Multi-agent pentesting automation with 16 locally-hosted models, custom MCP integration, and MITRE ATT&CK RAG pipeline.",
+        "longDescription": "",
+        "tags": ["Multi-Agent AI", "Kali Linux", "MCP", "Model Quantization", "MITRE ATT&CK", "RAG"],
+        "context": "Independent Project",
+        "hasDemo": true,
+        "featured": false,
+        "order": 2
+    },
+    {
+        "slug": "mcp-client",
+        "title": "MCP Layer Client",
+        "subtitle": "Universal MCP Server Bridge",
+        "description": "Custom 5ire-based MCP client connecting up to 1,000 servers. Caches all tool registries and relays capabilities via single connection to Agent Smith\u2019s backend.",
+        "longDescription": "",
+        "tags": ["MCP Protocol", "JSON-RPC 2.0", "Tool Orchestration", "5ire"],
+        "context": "Independent Project",
+        "hasDemo": true,
+        "featured": false,
+        "order": 3
+    },
+    {
+        "slug": "rag-finance",
+        "title": "Hybrid RAG Financial Analysis",
+        "subtitle": "SEC 10-Q Document Intelligence",
+        "description": "Graph-enhanced hybrid RAG system for SEC 10-Q financial document analysis. 73-page documents processed at 146% above requirements with zero accuracy degradation.",
+        "longDescription": "",
+        "tags": ["RAG", "Graph Retrieval", "DeepEval", "Financial Analysis", "LLM"],
+        "context": "AI Engineering Capstone \u00b7 BGU \u00b7 2025",
+        "hasDemo": true,
+        "featured": false,
+        "order": 4
+    },
+    {
+        "slug": "ai-screening",
+        "title": "AI Recruitment Screening",
+        "subtitle": "Injection-Hardened CV Analysis",
+        "description": "Agentic AI browser prompts for automated CV and LinkedIn evaluation with security hardening \u2014 detects hidden text, encoded manipulation, unicode tricks, keyword stuffing.",
+        "longDescription": "",
+        "tags": ["AI Screening", "Prompt Injection Defense", "Agentic AI"],
+        "context": "Independent Project",
+        "hasDemo": true,
+        "featured": false,
+        "order": 5
+    },
+    {
+        "slug": "rtls-infrastructure",
+        "title": "Enterprise Healthcare RTLS Infrastructure",
+        "subtitle": "17 Years of Mission-Critical Deployments",
+        "description": "Architected and managed 17 enterprise RTLS and temperature monitoring deployments protecting Israel\u2019s pharmaceutical cold chain.",
+        "longDescription": "Full lifecycle ownership across a 1,000-clinic healthcare network (17 hospitals), a 300-store national retail chain, and 15 specialized installations. Designed solutions using WiFi triangulation, UWB, and BLE across Wiliot, IntraPosition, KontaktIO, and SecuritasHealthCare platforms. Integrated RTLS with healthcare management systems, pharmacy software, ERP systems, and regulatory compliance platforms via custom API development. Delivered frontal technical training to customer teams with 100% system adoption rate. Second-in-command of the RTLS department and primary technical escalation point across all departments.",
+        "tags": ["Solution Architecture", "RTLS", "Cold Chain", "Wiliot", "IntraPosition", "UWB", "BLE", "System Integration"],
+        "context": "2Plus Wireless Solutions \u00b7 2008\u20132025",
+        "hasDemo": false,
+        "featured": true,
+        "order": 6
+    }
+]

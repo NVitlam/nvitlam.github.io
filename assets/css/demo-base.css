@@ -1,0 +1,118 @@
+/* ══════════════════════════════════════════════════════════
+   Demo Page Chrome — Shared across all demo pages
+   ══════════════════════════════════════════════════════════ */
+@import url('tokens.css');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Sticky Nav ── */
+.demo-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: rgba(10, 15, 26, 0.85);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+}
+
+.demo-back {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+    letter-spacing: 0.02em;
+}
+
+.demo-back:hover { color: var(--accent-blue-light); }
+
+.demo-logo {
+    width: 32px;
+    height: 32px;
+}
+
+/* ── Disclaimer Banner ── */
+.demo-disclaimer {
+    background: var(--accent-orange);
+    color: #fff;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+}
+
+/* ── Main Content Area ── */
+.demo-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    min-height: calc(100vh - 200px);
+}
+
+/* ── About Footer ── */
+.demo-about {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    border-top: 1px solid var(--border);
+}
+
+.demo-about h2 {
+    font-family: var(--font-display);
+    font-size: 1.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.demo-about p {
+    font-size: 0.92em;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.demo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+}
+
+.demo-tag {
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    font-weight: 500;
+    color: var(--accent-blue);
+    background: var(--accent-blue-soft);
+    border: 1px solid rgba(74, 124, 165, 0.15);
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .demo-content { padding: 24px 16px; }
+    .demo-about { padding: 32px 16px 48px; }
+}

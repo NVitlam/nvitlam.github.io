@@ -3,492 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nadav Vitlam — Independent Solution Architect | RTLS · IoT · AI</title>
-    <meta name="description" content="Independent Solution Architect with 17 years of enterprise RTLS, IoT infrastructure, and AI engineering experience. Specializing in pharmaceutical cold chain, healthcare systems, and intelligent automation.">
+    <title>Nadav Vitlam — Solution Architect | AI Spec Developer</title>
+    <meta name="description" content="Independent Solution Architect and AI Spec Developer with 17 years of enterprise RTLS/IoT infrastructure experience. Specializing in healthcare systems, AI engineering, and intelligent automation.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0a0f1a;
-            --bg-card: rgba(15, 22, 40, 0.7);
-            --bg-card-hover: rgba(20, 30, 55, 0.85);
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.18);
-            --text-primary: #e8eaf0;
-            --text-secondary: #8b92a8;
-            --text-muted: #5a6178;
-            --accent: #4fc3f7;
-            --accent-soft: rgba(79, 195, 247, 0.1);
-            --accent-green: #66bb6a;
-            --accent-green-soft: rgba(102, 187, 106, 0.1);
-            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            min-height: 100vh;
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-        }
-        #particles-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.5;
-        }
-        .site {
-            position: relative;
-            z-index: 10;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 60px 24px 80px;
-        }
-        /* ── Header ── */
-        .header { margin-bottom: 64px; }
-        .header h1 {
-            font-size: 2.6em;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--text-primary);
-            line-height: 1.15;
-        }
-        .header-subtitle {
-            font-size: 1.15em;
-            color: var(--text-secondary);
-            font-weight: 400;
-            margin-top: 6px;
-        }
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-mono);
-            font-size: 0.78em;
-            font-weight: 500;
-            color: var(--accent-green);
-            background: var(--accent-green-soft);
-            border: 1px solid rgba(102, 187, 106, 0.25);
-            border-radius: 6px;
-            padding: 8px 16px;
-            letter-spacing: 0.04em;
-            margin-top: 10px;
-        }
-        .status-dot {
-            width: 7px; height: 7px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .header-bio {
-            color: var(--text-secondary);
-            font-size: 1.05em;
-            line-height: 1.8;
-            max-width: 780px;
-            margin-top: 28px;
-        }
-        .header-bio strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        .contact-row {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 24px;
-        }
-        .contact-row a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9em;
-            font-family: var(--font-mono);
-            transition: color 0.2s;
-        }
-        .contact-row a:hover { color: var(--accent); }
-        /* ── Section ── */
-        .section { margin-bottom: 56px; }
-        .section-label {
-            font-family: var(--font-mono);
-            font-size: 0.72em;
-            font-weight: 500;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        /* ── Metrics ── */
-        .metrics {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 56px;
-        }
-        .metric {
-            background: var(--bg-card);
-            padding: 28px 20px;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .metric:hover { background: var(--bg-card-hover); }
-        .metric-value {
-            font-size: 2em;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.2;
-        }
-        .metric-label {
-            font-size: 0.82em;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-        /* ── Credentials ── */
-        .credentials-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .credential {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px 24px;
-            transition: all 0.3s;
-        }
-        .credential:hover {
-            border-color: var(--border-hover);
-            background: var(--bg-card-hover);
-        }
-        .credential-year {
-            font-family: var(--font-mono);
-            font-size: 0.75em;
-            color: var(--accent);
-            margin-bottom: 6px;
-        }
-        .credential-title {
-            font-weight: 600;
-            font-size: 1em;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-        .credential-detail {
-            font-size: 0.88em;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-        .credential-tag {
-            display: inline-block;
-            font-family: var(--font-mono);
-            font-size: 0.68em;
-            font-weight: 500;
-            color: var(--accent-green);
-            background: var(--accent-green-soft);
-            border: 1px solid rgba(102, 187, 106, 0.2);
-            border-radius: 4px;
-            padding: 2px 8px;
-            margin-top: 8px;
-            letter-spacing: 0.04em;
-        }
-        /* ── Expertise ── */
-        .expertise-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .expertise-group {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 24px;
-            transition: all 0.3s;
-        }
-        .expertise-group:hover {
-            border-color: var(--border-hover);
-            background: var(--bg-card-hover);
-        }
-        .expertise-heading {
-            font-weight: 600;
-            font-size: 0.95em;
-            color: var(--text-primary);
-            margin-bottom: 14px;
-        }
-        .expertise-items {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .expertise-items li {
-            font-size: 0.88em;
-            color: var(--text-secondary);
-            padding-left: 14px;
-            position: relative;
-            line-height: 1.5;
-        }
-        .expertise-items li::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 9px;
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: var(--text-muted);
-        }
-        /* ── Projects ── */
-        .project-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .project {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 28px;
-            transition: all 0.3s;
-        }
-        .project:hover {
-            border-color: var(--border-hover);
-            background: var(--bg-card-hover);
-            transform: translateY(-2px);
-        }
-        .project-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-        .project-name {
-            font-weight: 600;
-            font-size: 1.1em;
-            color: var(--text-primary);
-        }
-        .project-org {
-            font-family: var(--font-mono);
-            font-size: 0.75em;
-            color: var(--text-muted);
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border);
-            padding: 3px 10px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-        .project-desc {
-            font-size: 0.92em;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-bottom: 14px;
-        }
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .tag {
-            font-family: var(--font-mono);
-            font-size: 0.72em;
-            color: var(--accent);
-            background: var(--accent-soft);
-            border: 1px solid rgba(79, 195, 247, 0.15);
-            padding: 3px 10px;
-            border-radius: 4px;
-            letter-spacing: 0.02em;
-        }
-        /* ── Platforms ── */
-        .platforms {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .platform-row {
-            display: flex;
-            gap: 12px;
-            align-items: baseline;
-        }
-        .platform-label {
-            font-family: var(--font-mono);
-            font-size: 0.78em;
-            font-weight: 500;
-            color: var(--text-muted);
-            min-width: 110px;
-            flex-shrink: 0;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .platform-items {
-            font-size: 0.9em;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-        /* ── Approach ── */
-        .personal-note {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 28px;
-            color: var(--text-secondary);
-            font-size: 0.95em;
-            line-height: 1.8;
-        }
-        .personal-note p + p { margin-top: 14px; }
-        /* ── Footer ── */
-        .footer {
-            margin-top: 64px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        .footer-links {
-            display: flex;
-            gap: 24px;
-        }
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.88em;
-            transition: color 0.2s;
-        }
-        .footer-links a:hover { color: var(--accent); }
-        .footer-copy {
-            font-size: 0.82em;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-        }
-        /* ── Loading ── */
-        .loading-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.6s ease;
-        }
-        .loading-screen.done { opacity: 0; pointer-events: none; }
-        .loading-bar-track {
-            width: 200px; height: 2px;
-            background: var(--border);
-            border-radius: 1px;
-            overflow: hidden;
-        }
-        .loading-bar-fill {
-            height: 100%; width: 0%;
-            background: var(--accent);
-            border-radius: 1px;
-            transition: width 0.3s ease;
-        }
-        /* ── Scroll reveal ── */
-        .reveal {
-            opacity: 0;
-            transform: translateY(16px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .site { padding: 40px 16px 60px; }
-            .header h1 { font-size: 2em; }
-            .metrics { grid-template-columns: repeat(2, 1fr); }
-            .credentials-grid { grid-template-columns: 1fr; }
-            .expertise-grid { grid-template-columns: 1fr; }
-            .contact-row { gap: 16px; }
-            .platform-row { flex-direction: column; gap: 4px; }
-            .platform-label { min-width: unset; }
-        }
-        @media (max-width: 480px) {
-            .header h1 { font-size: 1.7em; }
-            .metrics { grid-template-columns: 1fr 1fr; }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
-    <div class="loading-screen" id="loader">
-        <div class="loading-bar-track">
-            <div class="loading-bar-fill" id="loader-fill"></div>
-        </div>
-    </div>
-    <canvas id="particles-canvas"></canvas>
+    <!-- Subtle network background pattern -->
+    <svg class="network-bg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <defs>
+            <pattern id="net" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+                <circle cx="10" cy="10" r="1.5" fill="#4a7ca5" opacity="0.3"/>
+                <circle cx="60" cy="30" r="1" fill="#4a7ca5" opacity="0.2"/>
+                <circle cx="110" cy="60" r="1.5" fill="#4a7ca5" opacity="0.3"/>
+                <circle cx="40" cy="80" r="1" fill="#4a7ca5" opacity="0.2"/>
+                <circle cx="90" cy="110" r="1.5" fill="#4a7ca5" opacity="0.25"/>
+                <line x1="10" y1="10" x2="60" y2="30" stroke="#c44b2b" stroke-width="0.5" opacity="0.15"/>
+                <line x1="60" y1="30" x2="110" y2="60" stroke="#4a7ca5" stroke-width="0.5" opacity="0.12"/>
+                <line x1="40" y1="80" x2="90" y2="110" stroke="#c44b2b" stroke-width="0.5" opacity="0.15"/>
+                <line x1="10" y1="10" x2="40" y2="80" stroke="#4a7ca5" stroke-width="0.5" opacity="0.1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#net)"/>
+    </svg>
+
     <div class="site">
-        <header class="header">
-            <div>
-                <h1>Nadav Vitlam</h1>
-                <div class="header-subtitle">Independent Solution Architect &mdash; RTLS &middot; IoT &middot; AI Engineering</div>
-                <div class="status-indicator">
-                    <span class="status-dot"></span>
-                    Available for Projects
-                </div>
+        <!-- ═══ Hero ═══ -->
+        <header class="hero">
+            <img src="/assets/img/nv-logo.svg" alt="NV Network Logo" class="hero-logo">
+            <h1 class="hero-name">Nadav Vitlam</h1>
+            <div class="hero-titles">
+                <span class="pipe">|</span> Solution Architect
+                <span class="pipe">|</span> AI Spec Developer
             </div>
-            <p class="header-bio">
-                <strong>17 years of designing, deploying, and managing enterprise critical systems.</strong>
-                I architect solutions for pharmaceutical cold chain protection, healthcare asset tracking, and
-                temperature monitoring at national scale &mdash; most recently responsible for 17 active RTLS
-                deployments safeguarding Israel's drug supply across 1,000+ healthcare facilities. Now combining
-                that infrastructure depth with AI engineering as an independent consultant, building intelligent
-                systems that solve real operational problems.
-            </p>
+            <div class="hero-specialties">RTLS &middot; IoT &middot; AI Engineering &middot; Healthcare Infra</div>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                Available for Projects
+            </div>
             <div class="contact-row">
-                <a href="mailto:nadavvitlam@gmail.com">nadavvitlam@gmail.com</a>
+                <a href="mailto:nadavvitlam@outlook.com">nadavvitlam@outlook.com</a>
                 <a href="tel:+972546528158">+972-54-652-8158</a>
-                <a href="https://www.linkedin.com/in/nadav-vitlam/" target="_blank">LinkedIn</a>
-                <a href="https://github.com/NVitlam" target="_blank">GitHub</a>
+                <a href="https://www.linkedin.com/in/nadav-vitlam/" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://github.com/NVitlam" target="_blank" rel="noopener">GitHub</a>
             </div>
         </header>
-        <div class="metrics reveal">
-            <div class="metric">
-                <div class="metric-value">17</div>
-                <div class="metric-label">Years in the Field</div>
-            </div>
-            <div class="metric">
-                <div class="metric-value">17</div>
-                <div class="metric-label">Enterprise Deployments</div>
-            </div>
-            <div class="metric">
-                <div class="metric-value">1,000+</div>
-                <div class="metric-label">Facilities Served</div>
-            </div>
-            <div class="metric">
-                <div class="metric-value">0</div>
-                <div class="metric-label">Monitoring Failures</div>
-            </div>
-        </div>
+
+        <!-- ═══ About ═══ -->
         <section class="section reveal">
-            <div class="section-label">Credentials</div>
+            <div class="section-label"><span class="pipe">|</span> About</div>
+            <div class="about-text">
+                <p>17 years designing, deploying, and managing enterprise RTLS and IoT infrastructure &mdash; pharmaceutical cold chain protection, healthcare asset tracking, temperature monitoring at national scale. Responsible for 17 active enterprise deployments across 1,000+ healthcare facilities and 300+ retail locations. Second-in-command of the RTLS department at 2Plus Wireless Solutions, Aruba Gold Partner.</p>
+                <p>Completed AI Engineering certification at Ben Gurion University. Invited back as Course Practitioner. Built production AI systems: multi-model security automation, healthcare NLP, hybrid RAG, recruitment screening with prompt injection defense. Now offering both disciplines as an independent consultant.</p>
+            </div>
+        </section>
+
+        <!-- ═══ Projects ═══ -->
+        <section class="section reveal">
+            <div class="section-label"><span class="pipe">|</span> Projects</div>
+            <div class="project-grid" id="project-grid"></div>
+
+            <!-- Noscript fallback -->
+            <noscript>
+                <div class="project-grid">
+                    <a href="/projects/nira/" class="project-card">
+                        <div class="project-card-title">NIRA</div>
+                        <div class="project-card-subtitle">Natural IVF Response Assistant</div>
+                        <div class="project-card-context">BGU &amp; Soroka Medical Hackathon &middot; 2025</div>
+                        <div class="project-card-desc">AI-powered patient support for IVF treatment queries in a healthcare-compliant framework.</div>
+                        <div class="project-card-tags">
+                            <span class="tag">Healthcare AI</span><span class="tag">NLP</span><span class="tag">Patient Support</span>
+                        </div>
+                    </a>
+                    <a href="/projects/baron-ai/" class="project-card">
+                        <div class="project-card-title">Baron AI / Mr. Smith</div>
+                        <div class="project-card-subtitle">AI Security Platform</div>
+                        <div class="project-card-context">Independent Project</div>
+                        <div class="project-card-desc">Multi-agent pentesting automation with 16 locally-hosted models, custom MCP integration, and MITRE ATT&amp;CK RAG pipeline.</div>
+                        <div class="project-card-tags">
+                            <span class="tag">Multi-Agent AI</span><span class="tag">Kali Linux</span><span class="tag">MCP</span>
+                        </div>
+                    </a>
+                    <a href="/projects/mcp-client/" class="project-card">
+                        <div class="project-card-title">MCP Layer Client</div>
+                        <div class="project-card-subtitle">Universal MCP Server Bridge</div>
+                        <div class="project-card-context">Independent Project</div>
+                        <div class="project-card-desc">Custom 5ire-based MCP client connecting up to 1,000 servers.</div>
+                        <div class="project-card-tags">
+                            <span class="tag">MCP Protocol</span><span class="tag">JSON-RPC 2.0</span>
+                        </div>
+                    </a>
+                    <a href="/projects/rag-finance/" class="project-card">
+                        <div class="project-card-title">Hybrid RAG Financial Analysis</div>
+                        <div class="project-card-subtitle">SEC 10-Q Document Intelligence</div>
+                        <div class="project-card-context">AI Engineering Capstone &middot; BGU &middot; 2025</div>
+                        <div class="project-card-desc">Graph-enhanced hybrid RAG system for SEC 10-Q financial document analysis.</div>
+                        <div class="project-card-tags">
+                            <span class="tag">RAG</span><span class="tag">Graph Retrieval</span><span class="tag">DeepEval</span>
+                        </div>
+                    </a>
+                    <a href="/projects/ai-screening/" class="project-card">
+                        <div class="project-card-title">AI Recruitment Screening</div>
+                        <div class="project-card-subtitle">Injection-Hardened CV Analysis</div>
+                        <div class="project-card-context">Independent Project</div>
+                        <div class="project-card-desc">Agentic AI browser prompts for automated CV and LinkedIn evaluation with security hardening.</div>
+                        <div class="project-card-tags">
+                            <span class="tag">AI Screening</span><span class="tag">Prompt Injection Defense</span>
+                        </div>
+                    </a>
+                    <div class="project-card featured">
+                        <div class="project-card-title">Enterprise Healthcare RTLS Infrastructure</div>
+                        <div class="project-card-subtitle">17 Years of Mission-Critical Deployments</div>
+                        <div class="project-card-context">2Plus Wireless Solutions &middot; 2008&ndash;2025</div>
+                        <div class="project-card-desc">Architected and managed 17 enterprise RTLS and temperature monitoring deployments protecting Israel&rsquo;s pharmaceutical cold chain.</div>
+                        <div class="project-card-long-desc">Full lifecycle ownership across a 1,000-clinic healthcare network (17 hospitals), a 300-store national retail chain, and 15 specialized installations. Designed solutions using WiFi triangulation, UWB, and BLE across Wiliot, IntraPosition, KontaktIO, and SecuritasHealthCare platforms.</div>
+                        <div class="project-card-tags">
+                            <span class="tag">Solution Architecture</span><span class="tag">RTLS</span><span class="tag">Cold Chain</span>
+                        </div>
+                    </div>
+                </div>
+            </noscript>
+        </section>
+
+        <!-- ═══ Credentials ═══ -->
+        <section class="section reveal">
+            <div class="section-label"><span class="pipe">|</span> Credentials</div>
             <div class="credentials-grid">
                 <div class="credential">
                     <div class="credential-year">2025</div>
                     <div class="credential-title">AI Engineering &mdash; Ben Gurion University</div>
-                    <div class="credential-detail">Capstone: Hybrid RAG system for SEC 10-Q financial document analysis with graph-enhanced retrieval. 73-page documents processed at 146% above requirements, zero degradation.</div>
-                    <div class="credential-tag">Invited as Course Practitioner for next cohort</div>
+                    <div class="credential-detail">Capstone: Hybrid RAG for SEC 10-Q financial document analysis with graph-enhanced retrieval. Invited as Course Practitioner for next cohort.</div>
+                    <div class="credential-tag">Invited as Course Practitioner</div>
                 </div>
                 <div class="credential">
                     <div class="credential-year">2025</div>
                     <div class="credential-title">NIRA &mdash; BGU &amp; Soroka Medical Hackathon</div>
-                    <div class="credential-detail">Built Natural IVF Response Assistant &mdash; AI-powered patient support providing treatment guidance in a healthcare-compliant framework.</div>
-                    <div class="credential-tag">AI + Healthcare domain convergence</div>
+                    <div class="credential-detail">Team project: Natural IVF Response Assistant &mdash; AI-powered patient support in a healthcare-compliant framework.</div>
                 </div>
                 <div class="credential">
                     <div class="credential-year">2008 &ndash; 2025</div>
@@ -498,295 +150,50 @@
                 <div class="credential">
                     <div class="credential-year">Foundation</div>
                     <div class="credential-title">MCSA &middot; .NET/C# Development</div>
-                    <div class="credential-detail">HackerU College (networking infrastructure) &amp; John Bryce College (application development). Military: Base IT Admin, 150-user network, Staff Sergeant.</div>
+                    <div class="credential-detail">HackerU College (networking infrastructure) &amp; John Bryce College (application development). Military: Base IT Admin, 150-user network, Staff Sergeant (2004&ndash;2006).</div>
                 </div>
             </div>
         </section>
+
+        <!-- ═══ Technology ═══ -->
         <section class="section reveal">
-            <div class="section-label">Expertise</div>
-            <div class="expertise-grid">
-                <div class="expertise-group">
-                    <div class="expertise-heading">RTLS &amp; IoT Infrastructure</div>
-                    <ul class="expertise-items">
-                        <li>RTLS architecture, deployment, and lifecycle management</li>
-                        <li>Pharmaceutical cold chain &amp; temperature monitoring</li>
-                        <li>Asset tracking at enterprise scale</li>
-                        <li>WiFi triangulation, Ultra-WideBand, Bluetooth LE</li>
-                        <li>Wiliot, IntraPosition, KontaktIO, SecuritasHealthCare</li>
-                    </ul>
+            <div class="section-label"><span class="pipe">|</span> Technology</div>
+            <div class="tech-rows">
+                <div class="tech-row">
+                    <div class="tech-label">RTLS / IoT</div>
+                    <div class="tech-items">Wiliot &middot; IntraPosition &middot; KontaktIO &middot; SecuritasHealthCare &middot; UWB &middot; BLE &middot; WiFi Triangulation</div>
                 </div>
-                <div class="expertise-group">
-                    <div class="expertise-heading">AI &amp; Machine Learning</div>
-                    <ul class="expertise-items">
-                        <li>LLM integration, orchestration, and optimization</li>
-                        <li>RAG systems with hybrid retrieval architectures</li>
-                        <li>Model quantization (GGUF, SINQ, MLC-LLM)</li>
-                        <li>Multi-agent system design</li>
-                        <li>MCP protocol architecture (JSON-RPC 2.0)</li>
-                    </ul>
+                <div class="tech-row">
+                    <div class="tech-label">AI / ML</div>
+                    <div class="tech-items">Python &middot; LLM Orchestration &middot; RAG &middot; Vector Databases &middot; MCP &middot; GGUF/SINQ/MLC-LLM Quantization &middot; DeepEval</div>
                 </div>
-                <div class="expertise-group">
-                    <div class="expertise-heading">Security &amp; Automation</div>
-                    <ul class="expertise-items">
-                        <li>AI-powered pentesting automation (Kali Linux)</li>
-                        <li>MITRE ATT&amp;CK framework integration</li>
-                        <li>Prompt injection detection &amp; defense</li>
-                        <li>Local AI model management (16 models)</li>
-                        <li>Security-hardened AI screening systems</li>
-                    </ul>
+                <div class="tech-row">
+                    <div class="tech-label">Security</div>
+                    <div class="tech-items">Kali Linux &middot; Baron AI &middot; MITRE ATT&amp;CK &middot; Pentesting Automation &middot; Prompt Injection Detection</div>
                 </div>
-                <div class="expertise-group">
-                    <div class="expertise-heading">Solution Delivery</div>
-                    <ul class="expertise-items">
-                        <li>End-to-end project lifecycle ownership</li>
-                        <li>System integration &amp; API development</li>
-                        <li>Client training, enablement, and adoption</li>
-                        <li>Python, C#/.NET, React, modern web</li>
-                        <li>Enterprise networking (Aruba, Cisco)</li>
-                    </ul>
+                <div class="tech-row">
+                    <div class="tech-label">Infra</div>
+                    <div class="tech-items">Aruba (Gold Partner) &middot; Cisco &middot; Enterprise WLAN &middot; Network Design &middot; System Integration &amp; APIs</div>
+                </div>
+                <div class="tech-row">
+                    <div class="tech-label">Development</div>
+                    <div class="tech-items">Python &middot; C#/.NET &middot; React &middot; Three.js &middot; HTML/CSS/JS &middot; MCP Client/Server</div>
                 </div>
             </div>
         </section>
-        <section class="section reveal">
-            <div class="section-label">Selected Projects</div>
-            <div class="project-list">
-                <div class="project">
-                    <div class="project-top">
-                        <div class="project-name">Enterprise Healthcare RTLS Infrastructure</div>
-                        <div class="project-org">2Plus Wireless Solutions &middot; 2008&ndash;2025</div>
-                    </div>
-                    <div class="project-desc">
-                        Architected and managed 17 mission-critical RTLS and temperature monitoring deployments
-                        protecting Israel's pharmaceutical supply chain. Designed tailored solutions for a 1,000-clinic
-                        healthcare network (17 hospitals), a 300-store national retail chain, and 15 specialized
-                        installations. Zero temperature monitoring failures. Integrated RTLS platforms with healthcare
-                        management systems, pharmacy software, and regulatory compliance platforms via custom APIs.
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">Solution Architecture</span>
-                        <span class="tag">RTLS</span>
-                        <span class="tag">Cold Chain</span>
-                        <span class="tag">Wiliot</span>
-                        <span class="tag">IntraPosition</span>
-                        <span class="tag">UWB / BLE</span>
-                        <span class="tag">System Integration</span>
-                    </div>
-                </div>
-                <div class="project">
-                    <div class="project-top">
-                        <div class="project-name">AI Security Platform &mdash; Baron AI / Mr. Smith</div>
-                        <div class="project-org">Independent Project</div>
-                    </div>
-                    <div class="project-desc">
-                        Comprehensive pentesting automation platform on Kali Linux with multi-agent architecture:
-                        Mr. Smith (orchestrator), Lily (cybersecurity strategy), Gemma (humanizer), QWEN (code generation).
-                        Core engine: Baron AI (BaronLLM-v2), self-quantized to 4-bit. Custom MCP client bridging
-                        multiple servers. Local vector DB with RAG pipeline for MITRE ATT&amp;CK framework-informed
-                        strategy generation.
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">Multi-Agent AI</span>
-                        <span class="tag">Kali Linux</span>
-                        <span class="tag">MCP Architecture</span>
-                        <span class="tag">Model Quantization</span>
-                        <span class="tag">MITRE ATT&amp;CK</span>
-                        <span class="tag">RAG</span>
-                    </div>
-                </div>
-                <div class="project">
-                    <div class="project-top">
-                        <div class="project-name">NIRA &mdash; Natural IVF Response Assistant</div>
-                        <div class="project-org">BGU &amp; Soroka Medical Hackathon</div>
-                    </div>
-                    <div class="project-desc">
-                        AI-powered assistant for IVF patient support, providing natural language responses to
-                        treatment-related queries within a healthcare-compliant framework. Built during a hackathon
-                        bridging Ben Gurion University's AI program with Soroka Medical Campus &mdash; connecting
-                        AI engineering with 17 years of healthcare infrastructure experience.
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">Healthcare AI</span>
-                        <span class="tag">NLP</span>
-                        <span class="tag">Patient Support</span>
-                        <span class="tag">Medical Compliance</span>
-                    </div>
-                </div>
-                <div class="project">
-                    <div class="project-top">
-                        <div class="project-name">Hybrid RAG Financial Analysis System</div>
-                        <div class="project-org">AI Engineering Capstone &middot; BGU</div>
-                    </div>
-                    <div class="project-desc">
-                        Specialized RAG system for SEC 10-Q financial document analysis with graph-enhanced hybrid
-                        retrieval architecture. Processed 73-page documents at 146% above requirements with zero
-                        accuracy degradation. DeepEval integration for real-time evaluation with explainable AI reasoning.
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">RAG</span>
-                        <span class="tag">Graph Retrieval</span>
-                        <span class="tag">DeepEval</span>
-                        <span class="tag">Financial Analysis</span>
-                        <span class="tag">LLM</span>
-                    </div>
-                </div>
-                <div class="project">
-                    <div class="project-top">
-                        <div class="project-name">AI Recruitment Screening System</div>
-                        <div class="project-org">Independent Project</div>
-                    </div>
-                    <div class="project-desc">
-                        Agentic AI browser prompts for automated CV and LinkedIn profile evaluation with security
-                        hardening against prompt injection. Detects hidden white text, encoded manipulation attempts,
-                        unicode tricks, keyword stuffing, and fake endorsement patterns. Weighted scoring across
-                        technical, experience, domain, and behavioral indicators.
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">AI Screening</span>
-                        <span class="tag">Prompt Injection Defense</span>
-                        <span class="tag">LinkedIn Analysis</span>
-                        <span class="tag">Agentic AI</span>
-                    </div>
-                </div>
-                <div class="project">
-                    <div class="project-top">
-                        <div class="project-name">MCP Protocol Integration</div>
-                        <div class="project-org">Independent Project</div>
-                    </div>
-                    <div class="project-desc">
-                        Deep implementation of Model Context Protocol architecture at the JSON-RPC 2.0 transport layer.
-                        Custom MCP clients and servers for development workflows, bridging stdio, SSE, and WebSocket
-                        transports into unified orchestration systems for Claude Code and security tooling.
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">MCP Protocol</span>
-                        <span class="tag">JSON-RPC 2.0</span>
-                        <span class="tag">Claude Code</span>
-                        <span class="tag">Orchestration</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="section reveal">
-            <div class="section-label">Technology</div>
-            <div class="platforms">
-                <div class="platform-row">
-                    <div class="platform-label">RTLS / IoT</div>
-                    <div class="platform-items">Wiliot &middot; IntraPosition &middot; KontaktIO &middot; SecuritasHealthCare &middot; UWB &middot; BLE &middot; WiFi Triangulation</div>
-                </div>
-                <div class="platform-row">
-                    <div class="platform-label">AI / ML</div>
-                    <div class="platform-items">Python &middot; LLM Orchestration &middot; RAG &middot; Vector Databases &middot; MCP &middot; GGUF/MLC-LLM Quantization &middot; DeepEval</div>
-                </div>
-                <div class="platform-row">
-                    <div class="platform-label">Security</div>
-                    <div class="platform-items">Kali Linux &middot; Baron AI &middot; MITRE ATT&amp;CK &middot; Pentesting Automation &middot; Prompt Injection Detection</div>
-                </div>
-                <div class="platform-row">
-                    <div class="platform-label">Infra</div>
-                    <div class="platform-items">Aruba (Gold Partner) &middot; Cisco &middot; Enterprise WLAN &middot; Network Design &middot; System Integration &middot; APIs</div>
-                </div>
-                <div class="platform-row">
-                    <div class="platform-label">Development</div>
-                    <div class="platform-items">Python &middot; C# / .NET &middot; React &middot; Three.js &middot; HTML/CSS/JS &middot; MCP Client/Server</div>
-                </div>
-            </div>
-        </section>
-        <section class="section reveal">
-            <div class="section-label">Approach</div>
-            <div class="personal-note">
-                <p>
-                    Every system I've architected started with understanding the real need. In healthcare,
-                    a system failure doesn't mean downtime &mdash; it means medication that doesn't reach
-                    patients. That's why my approach combines deep operational understanding with technical
-                    execution. I know what needs to work, and I make it work.
-                </p>
-                <p>
-                    Now I'm bringing that discipline to independent consulting. Combining 17 years of
-                    critical infrastructure expertise with AI engineering &mdash; not because it's trending,
-                    but because intelligent systems can predict failures, optimize operations, and solve
-                    problems at a scale humans can't match. From building healthcare NLP systems to managing
-                    16 local AI models for security automation, I architect solutions that are both innovative
-                    and reliable.
-                </p>
-                <p style="color: var(--text-muted); margin-top: 18px; font-size: 0.92em;">
-                    Beyond work: married with two kids, always gaming, always listening to music.
-                    Hebrew native, English fluent.
-                </p>
-            </div>
-        </section>
+
+        <!-- ═══ Footer ═══ -->
         <footer class="footer">
             <div class="footer-links">
-                <a href="mailto:nadavvitlam@gmail.com">Email</a>
-                <a href="https://www.linkedin.com/in/nadav-vitlam/" target="_blank">LinkedIn</a>
-                <a href="https://github.com/NVitlam" target="_blank">GitHub</a>
+                <a href="mailto:nadavvitlam@outlook.com">Email</a>
+                <a href="https://www.linkedin.com/in/nadav-vitlam/" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://github.com/NVitlam" target="_blank" rel="noopener">GitHub</a>
             </div>
             <div class="footer-copy">&copy; 2026 Nadav Vitlam</div>
         </footer>
     </div>
-    <script>
-        // ── Loading bar ──
-        const fill = document.getElementById('loader-fill');
-        let progress = 0;
-        const loadInterval = setInterval(() => {
-            progress += Math.random() * 30 + 10;
-            if (progress > 100) progress = 100;
-            fill.style.width = progress + '%';
-            if (progress >= 100) {
-                clearInterval(loadInterval);
-                setTimeout(() => document.getElementById('loader').classList.add('done'), 300);
-            }
-        }, 150);
-        // ── Ambient particles ──
-        const canvas = document.getElementById('particles-canvas');
-        const ctx = canvas.getContext('2d');
-        let W, H;
-        function resize() {
-            W = canvas.width = window.innerWidth;
-            H = canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-        const dots = [];
-        for (let i = 0; i < 55; i++) {
-            dots.push({
-                x: Math.random() * W, y: Math.random() * H,
-                vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-                r: Math.random() * 1.5 + 0.5
-            });
-        }
-        function animate() {
-            ctx.clearRect(0, 0, W, H);
-            dots.forEach(d => {
-                d.x += d.vx; d.y += d.vy;
-                if (d.x < 0 || d.x > W) d.vx *= -1;
-                if (d.y < 0 || d.y > H) d.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(79, 195, 247, 0.3)';
-                ctx.fill();
-            });
-            for (let i = 0; i < dots.length; i++) {
-                for (let j = i + 1; j < dots.length; j++) {
-                    const dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 160) {
-                        ctx.beginPath();
-                        ctx.moveTo(dots[i].x, dots[i].y);
-                        ctx.lineTo(dots[j].x, dots[j].y);
-                        ctx.strokeStyle = `rgba(79, 195, 247, ${0.06 - dist / 2700})`;
-                        ctx.lineWidth = 0.7;
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
-        // ── Scroll reveal ──
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    </script>
+
+    <script src="/assets/js/projects-loader.js"></script>
+    <script src="/assets/js/scroll-reveal.js"></script>
 </body>
 </html>
