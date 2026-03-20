@@ -3,637 +3,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCP Layer Client — Universal MCP Server Bridge</title>
+    <title>MCP Layer Client — Nadav Vitlam</title>
+    <link rel="stylesheet" href="/assets/css/tokens.css">
     <link rel="stylesheet" href="/assets/css/demo-base.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* ── Color Tokens ── */
-        :root {
-            --bg-primary: #0a0f1a;
-            --accent-blue: #4a7ca5;
-            --accent-blue-light: #6a9ec4;
-            --text-primary: #e0e4ec;
-            --text-secondary: #7a8599;
-            --accent-orange: #c44b2b;
-            --status-connected: #66bb6a;
-            --status-connecting: #f9a825;
-            --status-offline: #7a8599;
-        }
-
         /* ── Stats Bar ── */
         .stats-bar {
             display: flex;
-            justify-content: center;
-            gap: 32px;
-            flex-wrap: wrap;
-            padding: 20px 24px;
-            background: rgba(15, 22, 40, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 8px;
-            margin-bottom: 32px;
+            gap: var(--space-md);
+            padding: var(--space-lg) 24px;
+            max-width: var(--max-width);
+            margin: 0 auto;
         }
-
-        .stat-item {
+        .stat-box {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--border-radius);
+            padding: var(--space-md) var(--space-lg);
             text-align: center;
-            min-width: 100px;
         }
-
         .stat-value {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 1.6em;
+            font-family: var(--font-mono);
+            font-size: 1.6rem;
             font-weight: 600;
-            color: var(--accent-blue-light);
-            line-height: 1.2;
+            color: var(--text-primary);
+            line-height: 1.3;
         }
-
         .stat-label {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7em;
-            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
-        /* ── Dashboard Layout ── */
+        /* ── Main Layout ── */
         .dashboard {
             display: flex;
-            gap: 24px;
-            min-height: 520px;
+            gap: var(--space-lg);
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px var(--space-2xl);
+            min-height: 60vh;
         }
-
-        .server-panel {
+        .server-list {
+            flex: 0 0 58%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        .detail-panel {
             flex: 1;
-            min-width: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--border-radius);
+            padding: var(--space-lg);
+            position: sticky;
+            top: 100px;
+            align-self: flex-start;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
 
-        .panel-title {
-            font-family: 'Courier Prime', monospace;
-            font-size: 0.82em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-        }
-
-        /* ── Server Card Grid ── */
-        .server-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
-        }
-
+        /* ── Server Cards ── */
         .server-card {
-            background: rgba(15, 22, 40, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 16px;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, transform 0.15s;
-            position: relative;
-        }
-
-        .server-card:hover {
-            background: rgba(20, 30, 55, 0.85);
-            border-color: rgba(255, 255, 255, 0.18);
-            transform: translateY(-2px);
-        }
-
-        .server-card.active {
-            border-color: var(--accent-blue);
-            background: rgba(74, 124, 165, 0.1);
-        }
-
-        .server-card-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: var(--space-md);
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--border-radius);
+            padding: var(--space-md) var(--space-lg);
+            cursor: pointer;
+            transition: border-color var(--transition-fast), background var(--transition-fast);
         }
-
+        .server-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--bg-card-border-hv);
+        }
+        .server-card.selected {
+            border-color: var(--blue);
+            background: var(--bg-card-hover);
+        }
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             flex-shrink: 0;
         }
-
-        .status-dot.connected {
-            background: var(--status-connected);
-            box-shadow: 0 0 6px rgba(102, 187, 106, 0.5);
-        }
-
+        .status-dot.connected { background: var(--green); }
         .status-dot.connecting {
-            background: var(--status-connecting);
-            box-shadow: 0 0 6px rgba(249, 168, 37, 0.4);
+            background: var(--yellow);
             animation: pulse 1.5s ease-in-out infinite;
         }
-
-        .status-dot.offline {
-            background: var(--status-offline);
-        }
-
+        .status-dot.offline { background: var(--red); }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            50% { opacity: 0.35; }
         }
-
         .server-name {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.82em;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
             font-weight: 500;
             color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            flex: 1;
         }
-
         .server-meta {
             display: flex;
-            justify-content: space-between;
+            gap: var(--space-lg);
             align-items: center;
         }
-
-        .server-tools {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7em;
+        .server-meta span {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
             color: var(--text-secondary);
         }
-
-        .server-sync {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65em;
-            color: var(--text-secondary);
-            opacity: 0.7;
+        .server-meta .meta-label {
+            color: var(--text-muted);
+            margin-right: 4px;
         }
 
-        .server-status-label {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65em;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 6px;
+        /* ── Detail Panel ── */
+        .detail-placeholder {
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            text-align: center;
+            padding: var(--space-xl) 0;
         }
-
-        .server-status-label.connected { color: var(--status-connected); }
-        .server-status-label.connecting { color: var(--status-connecting); }
-        .server-status-label.offline { color: var(--status-offline); }
-
-        /* ── Tool Registry Panel ── */
-        .tool-panel {
-            width: 420px;
-            flex-shrink: 0;
-            background: rgba(15, 22, 40, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 24px;
-            transform: translateX(20px);
-            opacity: 0;
-            transition: transform 0.35s ease, opacity 0.3s ease;
-            overflow-y: auto;
-            max-height: 600px;
+        .detail-header {
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
         }
-
-        .tool-panel.visible {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .tool-panel-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-
-        .tool-panel-server {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.95em;
+        .detail-server-name {
+            font-family: var(--font-mono);
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: var(--space-xs);
         }
-
-        .tool-panel-subtitle {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7em;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-
-        .tool-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .tool-item {
-            background: rgba(10, 15, 26, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            padding: 12px 14px;
-            transition: border-color 0.2s;
-        }
-
-        .tool-item:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .tool-name {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.8em;
-            font-weight: 600;
-            color: var(--accent-blue-light);
-            margin-bottom: 3px;
-        }
-
-        .tool-desc {
-            font-size: 0.78em;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin-bottom: 4px;
-        }
-
-        .tool-params {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65em;
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        .tool-panel-empty {
+        .detail-status {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
             display: flex;
             align-items: center;
-            justify-content: center;
-            height: 100%;
-            min-height: 200px;
+            gap: 6px;
+        }
+        .detail-status.connected { color: var(--green); }
+        .detail-status.connecting { color: var(--yellow); }
+        .detail-status.offline { color: var(--red); }
+        .detail-section-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: var(--space-sm);
+        }
+        .detail-message {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
             color: var(--text-secondary);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.82em;
+            padding: var(--space-lg) 0;
             text-align: center;
-            opacity: 0.5;
+        }
+
+        /* ── Tool Table ── */
+        .tool-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tool-table th {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: left;
+            padding: var(--space-sm) var(--space-sm);
+            border-bottom: 1px solid var(--border);
+        }
+        .tool-table td {
+            padding: 7px var(--space-sm);
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .tool-table tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.015);
+        }
+        .tool-table tr:last-child td {
+            border-bottom: none;
+        }
+        .tool-name {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            color: var(--blue-light);
+            font-size: 0.78rem;
+        }
+        .tool-desc {
+            color: var(--text-secondary);
+        }
+        .tool-params {
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 0.78rem;
         }
 
         /* ── Responsive ── */
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
+            .stats-bar {
+                flex-wrap: wrap;
+                padding: var(--space-md) 16px;
+                gap: var(--space-sm);
+            }
+            .stat-box {
+                flex: 1 1 calc(50% - var(--space-sm));
+                min-width: 0;
+                padding: var(--space-sm) var(--space-md);
+            }
+            .stat-value { font-size: 1.2rem; }
             .dashboard {
                 flex-direction: column;
+                padding: 0 16px var(--space-xl);
             }
-
-            .tool-panel {
-                width: 100%;
-                transform: translateY(10px);
+            .server-list { flex: none; }
+            .detail-panel {
+                position: static;
+                max-height: none;
             }
-
-            .tool-panel.visible {
-                transform: translateY(0);
-            }
-
-            .stats-bar {
-                gap: 16px;
-            }
-
-            .stat-value {
-                font-size: 1.3em;
-            }
-        }
-
-        @media (max-width: 520px) {
-            .server-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-bar {
-                gap: 12px;
-            }
-
-            .stat-item {
-                min-width: 70px;
-            }
-
-            .stat-value {
-                font-size: 1.1em;
-            }
+            .server-meta { gap: var(--space-md); }
         }
     </style>
 </head>
 <body>
 
-    <!-- ── Nav ── -->
-    <nav class="demo-nav">
-        <a href="/" class="demo-back">&larr; Portfolio</a>
-        <img src="/assets/img/nv-logo-small.svg" alt="NV" class="demo-logo">
-    </nav>
+<!-- ── Nav ── -->
+<nav class="demo-nav">
+    <a href="/" class="demo-back">← Portfolio</a>
+    <span class="demo-nav-name">NV</span>
+</nav>
+<div class="demo-disclaimer">Interactive Demo — Simulated Data</div>
 
-    <!-- ── Disclaimer ── -->
-    <div class="demo-disclaimer">Interactive Demo &mdash; Simulated Data</div>
+<!-- ── Stats Bar ── -->
+<div class="stats-bar">
+    <div class="stat-box">
+        <div class="stat-value">10</div>
+        <div class="stat-label">Total Servers</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">7</div>
+        <div class="stat-label">Connected</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">847</div>
+        <div class="stat-label">Tools Cached</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">99.7%</div>
+        <div class="stat-label">Uptime</div>
+    </div>
+</div>
 
-    <!-- ── Content ── -->
-    <div class="demo-content">
-
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-value">10</div>
-                <div class="stat-label">Total Servers</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">6</div>
-                <div class="stat-label">Connected</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">847</div>
-                <div class="stat-label">Tools Cached</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">99.7%</div>
-                <div class="stat-label">Uptime</div>
-            </div>
-        </div>
-
-        <!-- Dashboard -->
-        <div class="dashboard">
-            <!-- Server Grid -->
-            <div class="server-panel">
-                <div class="panel-title">MCP Server Registry</div>
-                <div class="server-grid" id="serverGrid"></div>
-            </div>
-
-            <!-- Tool Registry Panel -->
-            <div class="tool-panel" id="toolPanel">
-                <div class="tool-panel-empty" id="toolPanelEmpty">
-                    Select a server to view<br>its tool registry
-                </div>
-                <div id="toolPanelContent" style="display:none;"></div>
-            </div>
+<!-- ── Dashboard ── -->
+<div class="demo-content">
+    <div class="dashboard">
+        <div class="server-list" id="serverList"></div>
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-placeholder">Select a server to view its tool registry</div>
         </div>
     </div>
+</div>
 
-    <!-- ── About Footer ── -->
-    <footer class="demo-about">
-        <h2>About This Project</h2>
-        <p>
-            MCP Layer Client is a universal bridge that connects multiple MCP (Model Context Protocol) servers
-            into a unified tool registry. It discovers, caches, and orchestrates tools across distributed
-            servers using JSON-RPC 2.0, enabling AI agents to seamlessly access file systems, databases,
-            APIs, and external services through a single standardized interface.
-        </p>
-        <p>
-            The client maintains persistent connections, handles automatic reconnection, and provides
-            real-time health monitoring across the entire server fleet. Tool schemas are cached locally
-            for fast lookups and served to upstream consumers on demand.
-        </p>
-        <div class="demo-tags">
-            <span class="demo-tag">MCP Protocol</span>
-            <span class="demo-tag">JSON-RPC 2.0</span>
-            <span class="demo-tag">Tool Orchestration</span>
-            <span class="demo-tag">5ire</span>
+<!-- ── About Footer ── -->
+<footer class="demo-about">
+    <h2>About This Project</h2>
+    <p>A custom MCP (Model Context Protocol) client built on the 5ire open-source platform. Designed to connect up to 1,000 MCP servers simultaneously, caching all tool registries and relaying capabilities through a single unified connection to Agent Smith's backend. Handles tool discovery, registration caching, and request routing across stdio, SSE, and WebSocket transports.</p>
+    <div class="demo-tags">
+        <span class="demo-tag">MCP Protocol</span>
+        <span class="demo-tag">JSON-RPC 2.0</span>
+        <span class="demo-tag">Tool Orchestration</span>
+        <span class="demo-tag">5ire</span>
+    </div>
+</footer>
+
+<script>
+const servers = [
+    { name: "filesystem-server", status: "connected", tools: 12, lastSync: "2s ago" },
+    { name: "web-search-server", status: "connected", tools: 5, lastSync: "1m ago" },
+    { name: "github-server", status: "connected", tools: 18, lastSync: "15s ago" },
+    { name: "database-server", status: "connected", tools: 8, lastSync: "30s ago" },
+    { name: "docker-server", status: "connected", tools: 14, lastSync: "45s ago" },
+    { name: "memory-server", status: "connected", tools: 6, lastSync: "5s ago" },
+    { name: "slack-server", status: "connecting", tools: 0, lastSync: "pending" },
+    { name: "jira-server", status: "connected", tools: 11, lastSync: "2m ago" },
+    { name: "analytics-server", status: "offline", tools: 0, lastSync: "3h ago" },
+    { name: "monitoring-server", status: "offline", tools: 0, lastSync: "5h ago" }
+];
+
+const toolRegistries = {
+    "filesystem-server": [
+        { name: "read_file", desc: "Read file contents from path", params: 2 },
+        { name: "write_file", desc: "Write content to file at path", params: 3 },
+        { name: "list_directory", desc: "List contents of a directory", params: 2 },
+        { name: "search_files", desc: "Search for files matching pattern", params: 3 },
+        { name: "get_file_info", desc: "Get metadata for a file", params: 1 },
+        { name: "create_directory", desc: "Create a new directory", params: 1 },
+        { name: "move_file", desc: "Move or rename a file", params: 2 },
+        { name: "delete_file", desc: "Delete a file at path", params: 1 },
+        { name: "read_multiple", desc: "Read multiple files in batch", params: 1 },
+        { name: "watch_directory", desc: "Watch directory for changes", params: 2 },
+        { name: "get_tree", desc: "Get directory tree structure", params: 2 },
+        { name: "calculate_hash", desc: "Calculate file hash (MD5/SHA)", params: 2 }
+    ],
+    "web-search-server": [
+        { name: "search", desc: "Perform web search query", params: 2 },
+        { name: "fetch_page", desc: "Fetch and parse web page", params: 1 },
+        { name: "extract_links", desc: "Extract all links from URL", params: 1 },
+        { name: "search_images", desc: "Search for images", params: 2 },
+        { name: "search_news", desc: "Search recent news articles", params: 2 }
+    ],
+    "github-server": [
+        { name: "search_repos", desc: "Search GitHub repositories", params: 3 },
+        { name: "get_file_contents", desc: "Get file from repository", params: 3 },
+        { name: "create_issue", desc: "Create new issue", params: 4 },
+        { name: "list_issues", desc: "List repository issues", params: 3 },
+        { name: "create_pull_request", desc: "Create a pull request", params: 5 },
+        { name: "get_pull_request", desc: "Get PR details", params: 2 },
+        { name: "list_commits", desc: "List recent commits", params: 3 },
+        { name: "create_branch", desc: "Create new branch", params: 3 },
+        { name: "search_code", desc: "Search code across repos", params: 2 },
+        { name: "get_repo_info", desc: "Get repository metadata", params: 1 },
+        { name: "list_branches", desc: "List all branches", params: 2 },
+        { name: "create_comment", desc: "Comment on issue or PR", params: 3 },
+        { name: "merge_pull_request", desc: "Merge a pull request", params: 3 },
+        { name: "get_diff", desc: "Get diff between refs", params: 3 },
+        { name: "list_workflows", desc: "List GitHub Actions workflows", params: 2 },
+        { name: "trigger_workflow", desc: "Trigger a workflow run", params: 3 },
+        { name: "get_user", desc: "Get GitHub user profile", params: 1 },
+        { name: "fork_repo", desc: "Fork a repository", params: 2 }
+    ],
+    "database-server": [
+        { name: "query", desc: "Execute SQL query", params: 2 },
+        { name: "list_tables", desc: "List all database tables", params: 1 },
+        { name: "describe_table", desc: "Get table schema", params: 1 },
+        { name: "insert_row", desc: "Insert data into table", params: 3 },
+        { name: "update_rows", desc: "Update matching rows", params: 3 },
+        { name: "delete_rows", desc: "Delete matching rows", params: 2 },
+        { name: "create_table", desc: "Create new table", params: 2 },
+        { name: "export_csv", desc: "Export query results as CSV", params: 2 }
+    ],
+    "docker-server": [
+        { name: "list_containers", desc: "List running containers", params: 1 },
+        { name: "start_container", desc: "Start a container", params: 1 },
+        { name: "stop_container", desc: "Stop a container", params: 1 },
+        { name: "container_logs", desc: "Get container logs", params: 2 },
+        { name: "exec_command", desc: "Execute command in container", params: 2 },
+        { name: "list_images", desc: "List Docker images", params: 1 },
+        { name: "build_image", desc: "Build image from Dockerfile", params: 3 },
+        { name: "pull_image", desc: "Pull image from registry", params: 1 },
+        { name: "inspect_container", desc: "Get container details", params: 1 },
+        { name: "list_networks", desc: "List Docker networks", params: 0 },
+        { name: "create_network", desc: "Create Docker network", params: 2 },
+        { name: "container_stats", desc: "Get resource usage stats", params: 1 },
+        { name: "prune_system", desc: "Remove unused resources", params: 1 },
+        { name: "compose_up", desc: "Start docker-compose stack", params: 2 }
+    ],
+    "memory-server": [
+        { name: "store", desc: "Store key-value pair", params: 3 },
+        { name: "retrieve", desc: "Retrieve value by key", params: 1 },
+        { name: "search_memory", desc: "Semantic search over stored data", params: 2 },
+        { name: "list_keys", desc: "List all stored keys", params: 1 },
+        { name: "delete_key", desc: "Delete a stored entry", params: 1 },
+        { name: "get_stats", desc: "Get memory usage statistics", params: 0 }
+    ],
+    "jira-server": [
+        { name: "search_issues", desc: "Search with JQL query", params: 2 },
+        { name: "create_issue", desc: "Create new Jira issue", params: 4 },
+        { name: "get_issue", desc: "Get issue details", params: 1 },
+        { name: "update_issue", desc: "Update issue fields", params: 3 },
+        { name: "add_comment", desc: "Add comment to issue", params: 2 },
+        { name: "transition_issue", desc: "Change issue status", params: 2 },
+        { name: "assign_issue", desc: "Assign issue to user", params: 2 },
+        { name: "list_projects", desc: "List all Jira projects", params: 0 },
+        { name: "get_sprint", desc: "Get current sprint info", params: 1 },
+        { name: "list_statuses", desc: "List available statuses", params: 1 },
+        { name: "link_issues", desc: "Create link between issues", params: 3 }
+    ]
+};
+
+const serverList = document.getElementById('serverList');
+const detailPanel = document.getElementById('detailPanel');
+let selectedServer = null;
+
+function renderServers() {
+    serverList.innerHTML = '';
+    servers.forEach(server => {
+        const card = document.createElement('div');
+        card.className = 'server-card' + (selectedServer === server.name ? ' selected' : '');
+        card.innerHTML = `
+            <span class="status-dot ${server.status}"></span>
+            <span class="server-name">${server.name}</span>
+            <div class="server-meta">
+                <span><span class="meta-label">tools</span>${server.tools}</span>
+                <span><span class="meta-label">sync</span>${server.lastSync}</span>
+            </div>
+        `;
+        card.addEventListener('click', () => selectServer(server));
+        serverList.appendChild(card);
+    });
+}
+
+function selectServer(server) {
+    selectedServer = server.name;
+    renderServers();
+    renderDetail(server);
+}
+
+function renderDetail(server) {
+    if (server.status === 'offline') {
+        detailPanel.innerHTML = `
+            <div class="detail-header">
+                <div class="detail-server-name">${server.name}</div>
+                <div class="detail-status ${server.status}">
+                    <span class="status-dot ${server.status}"></span>
+                    ${server.status}
+                </div>
+            </div>
+            <div class="detail-message">No tools available — server offline</div>
+        `;
+        return;
+    }
+
+    if (server.status === 'connecting') {
+        detailPanel.innerHTML = `
+            <div class="detail-header">
+                <div class="detail-server-name">${server.name}</div>
+                <div class="detail-status ${server.status}">
+                    <span class="status-dot ${server.status}"></span>
+                    ${server.status}
+                </div>
+            </div>
+            <div class="detail-message">Connecting...</div>
+        `;
+        return;
+    }
+
+    const tools = toolRegistries[server.name] || [];
+    let toolRows = tools.map(t => `
+        <tr>
+            <td class="tool-name">${t.name}</td>
+            <td class="tool-desc">${t.desc}</td>
+            <td class="tool-params">${t.params}</td>
+        </tr>
+    `).join('');
+
+    detailPanel.innerHTML = `
+        <div class="detail-header">
+            <div class="detail-server-name">${server.name}</div>
+            <div class="detail-status ${server.status}">
+                <span class="status-dot ${server.status}"></span>
+                ${server.status} · ${tools.length} tools
+            </div>
         </div>
-    </footer>
+        <div class="detail-section-title">Tool Registry</div>
+        <table class="tool-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Params</th>
+                </tr>
+            </thead>
+            <tbody>${toolRows}</tbody>
+        </table>
+    `;
+}
 
-    <script>
-        // ── Server & Tool Data ──
-        const servers = [
-            {
-                id: 'filesystem-server',
-                name: 'filesystem-server',
-                status: 'connected',
-                toolCount: 12,
-                lastSync: '2 min ago',
-                tools: [
-                    { name: 'read_file', desc: 'Read contents of a file at the given path', params: 2 },
-                    { name: 'write_file', desc: 'Write content to a file, creating directories as needed', params: 3 },
-                    { name: 'list_directory', desc: 'List all files and subdirectories in a path', params: 2 },
-                    { name: 'move_file', desc: 'Move or rename a file from source to destination', params: 2 },
-                    { name: 'copy_file', desc: 'Copy a file or directory to a new location', params: 3 },
-                    { name: 'delete_file', desc: 'Delete a file or empty directory permanently', params: 1 },
-                    { name: 'get_file_info', desc: 'Return metadata: size, permissions, timestamps', params: 1 },
-                    { name: 'search_files', desc: 'Recursively search for files matching a glob pattern', params: 3 },
-                    { name: 'create_directory', desc: 'Create a new directory with optional parents', params: 2 },
-                    { name: 'read_multiple_files', desc: 'Batch read multiple files in a single call', params: 1 },
-                    { name: 'watch_directory', desc: 'Watch a directory for file system changes', params: 2 },
-                    { name: 'get_disk_usage', desc: 'Return disk usage statistics for a given path', params: 1 }
-                ]
-            },
-            {
-                id: 'web-search-server',
-                name: 'web-search-server',
-                status: 'connected',
-                toolCount: 6,
-                lastSync: '1 min ago',
-                tools: [
-                    { name: 'web_search', desc: 'Search the web and return ranked results', params: 3 },
-                    { name: 'fetch_page', desc: 'Fetch and extract text content from a URL', params: 2 },
-                    { name: 'screenshot_url', desc: 'Capture a screenshot of a web page', params: 3 },
-                    { name: 'extract_links', desc: 'Extract all hyperlinks from a given URL', params: 1 },
-                    { name: 'search_news', desc: 'Search recent news articles by topic', params: 2 },
-                    { name: 'check_url_status', desc: 'Check HTTP status and response headers of a URL', params: 1 }
-                ]
-            },
-            {
-                id: 'github-server',
-                name: 'github-server',
-                status: 'connected',
-                toolCount: 10,
-                lastSync: '30 sec ago',
-                tools: [
-                    { name: 'list_repos', desc: 'List repositories for an authenticated user or org', params: 2 },
-                    { name: 'get_file_contents', desc: 'Get file contents from a repository at a ref', params: 3 },
-                    { name: 'create_issue', desc: 'Create a new issue with title, body, and labels', params: 4 },
-                    { name: 'list_pull_requests', desc: 'List pull requests filtered by state and author', params: 3 },
-                    { name: 'create_pull_request', desc: 'Open a new pull request between two branches', params: 5 },
-                    { name: 'search_code', desc: 'Search code across repositories using query syntax', params: 3 },
-                    { name: 'get_commit_history', desc: 'Retrieve commit log for a branch or file path', params: 3 },
-                    { name: 'create_branch', desc: 'Create a new branch from a given ref', params: 3 },
-                    { name: 'list_workflows', desc: 'List GitHub Actions workflows and their statuses', params: 2 },
-                    { name: 'get_repo_info', desc: 'Get repository metadata, stats, and settings', params: 1 }
-                ]
-            },
-            {
-                id: 'docker-server',
-                name: 'docker-server',
-                status: 'connected',
-                toolCount: 8,
-                lastSync: '45 sec ago',
-                tools: [
-                    { name: 'list_containers', desc: 'List running and stopped Docker containers', params: 1 },
-                    { name: 'run_container', desc: 'Run a new container from a specified image', params: 5 },
-                    { name: 'stop_container', desc: 'Stop a running container by name or ID', params: 2 },
-                    { name: 'container_logs', desc: 'Fetch stdout/stderr logs from a container', params: 3 },
-                    { name: 'list_images', desc: 'List locally available Docker images', params: 1 },
-                    { name: 'build_image', desc: 'Build a Docker image from a Dockerfile path', params: 4 },
-                    { name: 'exec_command', desc: 'Execute a command inside a running container', params: 3 },
-                    { name: 'inspect_container', desc: 'Return detailed container configuration and state', params: 1 }
-                ]
-            },
-            {
-                id: 'database-server',
-                name: 'database-server',
-                status: 'connected',
-                toolCount: 7,
-                lastSync: '15 sec ago',
-                tools: [
-                    { name: 'query', desc: 'Execute a read-only SQL query and return results', params: 2 },
-                    { name: 'list_tables', desc: 'List all tables in the connected database schema', params: 1 },
-                    { name: 'describe_table', desc: 'Get column names, types, and constraints for a table', params: 1 },
-                    { name: 'insert_row', desc: 'Insert a single row into a specified table', params: 2 },
-                    { name: 'update_rows', desc: 'Update rows matching a WHERE clause', params: 3 },
-                    { name: 'count_rows', desc: 'Return row count for a table with optional filter', params: 2 },
-                    { name: 'get_schema', desc: 'Export the full database schema as DDL statements', params: 1 }
-                ]
-            },
-            {
-                id: 'memory-server',
-                name: 'memory-server',
-                status: 'connected',
-                toolCount: 5,
-                lastSync: '5 sec ago',
-                tools: [
-                    { name: 'store_memory', desc: 'Store a key-value pair in the knowledge graph', params: 3 },
-                    { name: 'recall_memory', desc: 'Retrieve stored memories by key or semantic search', params: 2 },
-                    { name: 'list_memories', desc: 'List all stored memory keys with metadata', params: 1 },
-                    { name: 'delete_memory', desc: 'Remove a specific memory entry by key', params: 1 },
-                    { name: 'search_memories', desc: 'Semantic similarity search across stored memories', params: 2 }
-                ]
-            },
-            {
-                id: 'slack-server',
-                name: 'slack-server',
-                status: 'connecting',
-                toolCount: 9,
-                lastSync: 'pending',
-                tools: [
-                    { name: 'send_message', desc: 'Send a message to a Slack channel or DM', params: 3 },
-                    { name: 'list_channels', desc: 'List all accessible channels in the workspace', params: 1 },
-                    { name: 'read_channel', desc: 'Read recent messages from a channel', params: 3 },
-                    { name: 'search_messages', desc: 'Search message history across channels', params: 2 },
-                    { name: 'create_channel', desc: 'Create a new Slack channel with a given name', params: 2 },
-                    { name: 'upload_file', desc: 'Upload a file to a Slack channel or thread', params: 3 },
-                    { name: 'add_reaction', desc: 'Add an emoji reaction to a specific message', params: 2 },
-                    { name: 'list_users', desc: 'List all users in the Slack workspace', params: 1 },
-                    { name: 'set_topic', desc: 'Set or update the topic of a Slack channel', params: 2 }
-                ]
-            },
-            {
-                id: 'monitoring-server',
-                name: 'monitoring-server',
-                status: 'connecting',
-                toolCount: 6,
-                lastSync: 'pending',
-                tools: [
-                    { name: 'get_metrics', desc: 'Fetch system metrics for a specified time range', params: 3 },
-                    { name: 'list_alerts', desc: 'List active and resolved alerts', params: 2 },
-                    { name: 'create_alert_rule', desc: 'Define a new alerting rule with thresholds', params: 4 },
-                    { name: 'get_dashboard', desc: 'Retrieve a monitoring dashboard configuration', params: 1 },
-                    { name: 'check_health', desc: 'Run a health check against a target endpoint', params: 2 },
-                    { name: 'query_logs', desc: 'Query structured logs by time range and filters', params: 4 }
-                ]
-            },
-            {
-                id: 'backup-server',
-                name: 'backup-server',
-                status: 'offline',
-                toolCount: 4,
-                lastSync: '3 hrs ago',
-                tools: [
-                    { name: 'create_backup', desc: 'Create a full or incremental backup of a resource', params: 3 },
-                    { name: 'list_backups', desc: 'List available backup snapshots with timestamps', params: 1 },
-                    { name: 'restore_backup', desc: 'Restore a resource from a backup snapshot', params: 2 },
-                    { name: 'delete_backup', desc: 'Delete an old backup snapshot to free storage', params: 1 }
-                ]
-            },
-            {
-                id: 'legacy-api-server',
-                name: 'legacy-api-server',
-                status: 'offline',
-                toolCount: 3,
-                lastSync: '12 hrs ago',
-                tools: [
-                    { name: 'call_endpoint', desc: 'Make an HTTP request to a legacy REST endpoint', params: 4 },
-                    { name: 'list_endpoints', desc: 'List all registered legacy API endpoints', params: 1 },
-                    { name: 'transform_response', desc: 'Transform legacy XML/SOAP response to JSON', params: 2 }
-                ]
-            }
-        ];
-
-        // ── Render Server Cards ──
-        const grid = document.getElementById('serverGrid');
-        let activeCard = null;
-
-        servers.forEach(server => {
-            const card = document.createElement('div');
-            card.className = 'server-card';
-            card.dataset.serverId = server.id;
-            card.innerHTML = `
-                <div class="server-card-header">
-                    <span class="status-dot ${server.status}"></span>
-                    <span class="server-name">${server.name}</span>
-                </div>
-                <div class="server-meta">
-                    <span class="server-tools">${server.toolCount} tools</span>
-                    <span class="server-sync">${server.lastSync}</span>
-                </div>
-                <div class="server-status-label ${server.status}">${server.status}</div>
-            `;
-
-            card.addEventListener('click', () => selectServer(server, card));
-            grid.appendChild(card);
-        });
-
-        // ── Select Server & Show Tools ──
-        function selectServer(server, card) {
-            // Toggle active card
-            if (activeCard) activeCard.classList.remove('active');
-            if (activeCard === card) {
-                activeCard = null;
-                hideToolPanel();
-                return;
-            }
-            activeCard = card;
-            card.classList.add('active');
-
-            // Populate tool panel
-            const panel = document.getElementById('toolPanel');
-            const empty = document.getElementById('toolPanelEmpty');
-            const content = document.getElementById('toolPanelContent');
-
-            empty.style.display = 'none';
-            content.style.display = 'block';
-
-            content.innerHTML = `
-                <div class="tool-panel-header">
-                    <span class="status-dot ${server.status}"></span>
-                    <span class="tool-panel-server">${server.name}</span>
-                </div>
-                <div class="tool-panel-subtitle">${server.tools.length} registered tools &middot; ${server.status}</div>
-                <div class="tool-list">
-                    ${server.tools.map(tool => `
-                        <div class="tool-item">
-                            <div class="tool-name">${tool.name}</div>
-                            <div class="tool-desc">${tool.desc}</div>
-                            <div class="tool-params">${tool.params} parameter${tool.params !== 1 ? 's' : ''}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
-            // Slide in
-            panel.classList.add('visible');
-        }
-
-        function hideToolPanel() {
-            const panel = document.getElementById('toolPanel');
-            const empty = document.getElementById('toolPanelEmpty');
-            const content = document.getElementById('toolPanelContent');
-
-            panel.classList.remove('visible');
-            setTimeout(() => {
-                content.style.display = 'none';
-                empty.style.display = 'flex';
-            }, 300);
-        }
-    </script>
+renderServers();
+</script>
 </body>
 </html>

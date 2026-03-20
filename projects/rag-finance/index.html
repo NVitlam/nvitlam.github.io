@@ -3,580 +3,582 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid RAG Financial Analysis — Demo</title>
+    <title>Hybrid RAG Financial Analysis — Nadav Vitlam</title>
+    <link rel="stylesheet" href="/assets/css/tokens.css">
     <link rel="stylesheet" href="/assets/css/demo-base.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* ── Color Tokens ── */
-        :root {
-            --bg-primary: #0a0f1a;
-            --accent-blue: #4a7ca5;
-            --text-primary: #e0e4ec;
-            --text-secondary: #7a8599;
-            --accent-green: #66bb6a;
-            --doc-bg: #faf8f4;
-            --doc-text: #1a1a1a;
-            --doc-muted: #5a5a5a;
-            --doc-rule: #c8c2b6;
-            --pipeline-bg: rgba(15, 22, 40, 0.6);
+        /* ── Layout ── */
+        .demo-content {
+            display: flex;
+            height: calc(100vh - 85px);
+            overflow: hidden;
         }
 
-        /* ── Two-Panel Layout ── */
-        .panels {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        /* ── Document Preview (Left Panel) ── */
+        /* ── Left Panel: Document Preview ── */
         .doc-panel {
-            background: var(--doc-bg);
-            border-radius: var(--radius-md);
-            padding: 32px 28px;
-            color: var(--doc-text);
-            font-family: 'Times New Roman', 'Georgia', serif;
-            font-size: 0.82em;
-            line-height: 1.55;
-            max-height: 520px;
+            width: 45%;
+            min-width: 320px;
             overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.05);
+            padding: var(--space-xl) var(--space-lg);
+            border-right: 1px solid var(--border);
+            position: relative;
+            background: var(--bg-secondary);
+            box-shadow:
+                inset 0 12px 20px -10px rgba(0, 0, 0, 0.5),
+                inset 0 -12px 20px -10px rgba(0, 0, 0, 0.5);
         }
-
-        .doc-panel::-webkit-scrollbar { width: 6px; }
+        .doc-panel::-webkit-scrollbar { width: 5px; }
         .doc-panel::-webkit-scrollbar-track { background: transparent; }
-        .doc-panel::-webkit-scrollbar-thumb { background: var(--doc-rule); border-radius: 3px; }
+        .doc-panel::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
 
         .doc-header {
             text-align: center;
-            border-bottom: 2px solid var(--doc-text);
-            padding-bottom: 16px;
-            margin-bottom: 20px;
+            padding-bottom: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            border-bottom: 2px solid var(--text-muted);
         }
-
-        .doc-header h1 {
-            font-size: 1.15em;
+        .doc-header .sec-title {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.72rem;
             font-weight: 700;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 4px;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
         }
-
-        .doc-header .doc-subtitle {
-            font-size: 0.88em;
-            color: var(--doc-muted);
+        .doc-header .form-title {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
         }
-
-        .doc-header .doc-filing-info {
-            font-size: 0.78em;
-            color: var(--doc-muted);
-            margin-top: 6px;
+        .doc-header .company-name {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--blue-light);
+            letter-spacing: 0.04em;
+            margin-bottom: var(--space-xs);
+        }
+        .doc-header .period {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
             font-style: italic;
         }
 
-        .doc-section {
-            margin-bottom: 18px;
+        .doc-body {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.8rem;
+            line-height: 1.65;
+            color: var(--text-secondary);
         }
-
-        .doc-section h2 {
-            font-size: 0.92em;
+        .doc-body h3 {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.85rem;
             font-weight: 700;
+            color: var(--text-primary);
+            margin: var(--space-lg) 0 var(--space-sm);
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            border-bottom: 1px solid var(--doc-rule);
-            padding-bottom: 4px;
-            margin-bottom: 8px;
         }
-
-        .doc-section p {
-            margin-bottom: 8px;
+        .doc-body p {
+            margin-bottom: var(--space-md);
             text-align: justify;
         }
-
-        .doc-table {
+        .doc-body table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0;
-            font-size: 0.92em;
+            margin: var(--space-md) 0;
+            font-size: 0.75rem;
         }
-
-        .doc-table th,
-        .doc-table td {
-            border: 1px solid var(--doc-rule);
-            padding: 4px 8px;
+        .doc-body th, .doc-body td {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
             text-align: right;
         }
-
-        .doc-table th {
-            background: #ede9e0;
-            font-weight: 700;
+        .doc-body th {
             text-align: left;
-        }
-
-        .doc-table td:first-child {
-            text-align: left;
-        }
-
-        .doc-page-num {
-            text-align: center;
-            font-size: 0.75em;
-            color: var(--doc-muted);
-            margin-top: 12px;
-            padding-top: 8px;
-            border-top: 1px solid var(--doc-rule);
-        }
-
-        .doc-highlight {
-            background: rgba(74, 124, 165, 0.25);
-            border-left: 3px solid var(--accent-blue);
-            padding: 2px 6px;
-            transition: background 0.4s ease;
-        }
-
-        /* ── Pipeline Panel (Right Panel) ── */
-        .pipeline-panel {
-            background: var(--pipeline-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pipeline-title {
-            font-family: var(--font-display);
-            font-size: 0.9em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
             color: var(--text-primary);
-            margin-bottom: 20px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.02);
+        }
+        .doc-body td:first-child { text-align: left; }
+        .doc-page-num {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.65rem;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: var(--space-lg);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--border);
         }
 
-        .pipeline-stages {
-            flex: 1;
+        /* ── Right Panel: Pipeline ── */
+        .pipeline-panel {
+            width: 55%;
+            overflow-y: auto;
+            padding: var(--space-xl) var(--space-lg);
             display: flex;
             flex-direction: column;
-            gap: 12px;
         }
+        .pipeline-panel::-webkit-scrollbar { width: 5px; }
+        .pipeline-panel::-webkit-scrollbar-track { background: transparent; }
+        .pipeline-panel::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
 
-        .stage {
-            background: rgba(10, 15, 26, 0.5);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
-            opacity: 0.3;
-            transform: translateY(6px);
-            transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
-        }
-
-        .stage.active {
-            opacity: 1;
-            transform: translateY(0);
-            border-color: var(--accent-blue);
-        }
-
-        .stage.complete {
-            opacity: 0.85;
-            transform: translateY(0);
-            border-color: rgba(102, 187, 106, 0.4);
-        }
-
-        .stage-label {
+        .query-section h2 {
             font-family: var(--font-mono);
-            font-size: 0.78em;
+            font-size: 0.7rem;
             font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .stage.active .stage-label { color: var(--accent-blue); }
-        .stage.complete .stage-label { color: var(--accent-green); }
-
-        .stage-detail {
-            font-family: var(--font-mono);
-            font-size: 0.72em;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
             color: var(--text-muted);
-            min-height: 18px;
+            margin-bottom: var(--space-md);
         }
 
-        .stage.active .stage-detail,
-        .stage.complete .stage-detail { color: var(--text-secondary); }
-
-        /* ── Progress Bar ── */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 6px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--accent-blue);
-            border-radius: 2px;
-            transition: width 1s ease-in-out;
-        }
-
-        .stage.active .progress-fill { width: 100%; }
-
-        /* ── Graph SVG ── */
-        .graph-container {
-            margin-top: 6px;
-            height: 60px;
+        .query-buttons {
             display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+        }
+        .query-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .query-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--bg-card-border-hv);
+        }
+        .query-btn.active {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+        }
+        .query-btn::before {
+            content: '?';
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .graph-container svg { width: 180px; height: 60px; }
-
-        .graph-node {
-            fill: var(--accent-blue);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .graph-edge {
-            stroke: rgba(74, 124, 165, 0.4);
-            stroke-width: 1.5;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .stage.active .graph-node,
-        .stage.complete .graph-node { opacity: 1; }
-
-        .stage.active .graph-edge,
-        .stage.complete .graph-edge { opacity: 1; }
-
-        @keyframes pulse-node {
-            0%, 100% { r: 4; }
-            50% { r: 6; }
-        }
-
-        .stage.active .graph-node { animation: pulse-node 0.8s ease-in-out infinite; }
-
-        /* ── Search animation ── */
-        .search-dots {
-            display: inline-flex;
-            gap: 3px;
-            margin-left: 4px;
-        }
-
-        .search-dots span {
-            width: 4px;
-            height: 4px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: var(--accent-blue);
-            animation: dot-bounce 1s ease-in-out infinite;
-        }
-
-        .search-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .search-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes dot-bounce {
-            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-            40% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* ── Answer Box ── */
-        .answer-box {
-            background: rgba(10, 15, 26, 0.7);
-            border: 1px solid rgba(74, 124, 165, 0.3);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-top: 12px;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .answer-box.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .answer-label {
+            background: var(--blue-soft);
+            color: var(--blue-light);
             font-family: var(--font-mono);
-            font-size: 0.7em;
+            font-size: 0.7rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--accent-blue);
-            margin-bottom: 10px;
-        }
-
-        .answer-text {
-            font-size: 0.88em;
-            color: var(--text-primary);
-            line-height: 1.65;
-            margin-bottom: 12px;
-        }
-
-        .answer-sources {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .source-tag {
-            font-family: var(--font-mono);
-            font-size: 0.68em;
-            color: var(--accent-blue);
-            background: rgba(74, 124, 165, 0.12);
-            border: 1px solid rgba(74, 124, 165, 0.2);
-            padding: 2px 8px;
-            border-radius: 3px;
-        }
-
-        /* ── Question Buttons ── */
-        .questions-section {
-            margin-bottom: 24px;
-        }
-
-        .questions-label {
-            font-family: var(--font-mono);
-            font-size: 0.75em;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .question-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .question-btn {
-            font-family: var(--font-body);
-            font-size: 0.82em;
-            color: var(--text-primary);
-            background: rgba(15, 22, 40, 0.6);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.2s;
-            text-align: left;
-            line-height: 1.4;
-        }
-
-        .question-btn:hover {
-            border-color: var(--accent-blue);
-            background: rgba(74, 124, 165, 0.08);
-        }
-
-        .question-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .question-btn.selected {
-            border-color: var(--accent-blue);
-            background: rgba(74, 124, 165, 0.12);
-        }
-
-        /* ── Status Indicators ── */
-        .status-icon {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
+            margin-right: 10px;
             flex-shrink: 0;
         }
 
-        .stage.active .status-icon {
-            background: var(--accent-blue);
-            box-shadow: 0 0 6px rgba(74, 124, 165, 0.5);
-            animation: glow 1.2s ease-in-out infinite;
+        /* ── Pipeline Stages ── */
+        .pipeline-stages {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: var(--space-lg);
+        }
+        .stage {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            opacity: 0.25;
+            transition: opacity var(--transition-base);
+        }
+        .stage.active { opacity: 1; }
+        .stage.completed { opacity: 0.8; }
+
+        .stage-indicator {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: all var(--transition-base);
+        }
+        .stage.active .stage-indicator {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+            animation: pulse-indicator 1.2s infinite;
+        }
+        .stage.completed .stage-indicator {
+            border-color: var(--green-border);
+            background: var(--green-soft);
+        }
+        .stage.completed .stage-indicator::after {
+            content: '\2713';
+            color: var(--green);
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .stage-label {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+        .stage.active .stage-label { color: var(--text-primary); }
+
+        @keyframes pulse-indicator {
+            0%, 100% { box-shadow: 0 0 0 0 var(--blue-glow); }
+            50% { box-shadow: 0 0 0 6px transparent; }
         }
 
-        .stage.complete .status-icon {
-            background: var(--accent-green);
+        /* ── Progress Bar ── */
+        .progress-bar-wrap {
+            margin-top: 6px;
+            width: 100%;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--blue);
+            border-radius: 2px;
+            transition: width 1.5s ease;
         }
 
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 4px rgba(74, 124, 165, 0.3); }
-            50% { box-shadow: 0 0 10px rgba(74, 124, 165, 0.7); }
+        /* ── Chunk Counter ── */
+        .chunk-counter {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--blue-light);
+            margin-top: 4px;
+        }
+        .chunk-num {
+            font-weight: 600;
+            min-width: 2ch;
+            display: inline-block;
+        }
+
+        /* ── Graph SVG ── */
+        .graph-wrap {
+            margin-top: 6px;
+        }
+        .graph-wrap svg { display: block; }
+        .graph-node {
+            fill: var(--blue);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .graph-node.visible { opacity: 1; }
+        .graph-edge {
+            stroke: var(--text-muted);
+            stroke-width: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .graph-edge.visible { opacity: 0.5; }
+        .graph-edge.retrieval {
+            stroke: var(--orange);
+            stroke-width: 1.5;
+            opacity: 0;
+        }
+        .graph-edge.retrieval.visible { opacity: 0.9; }
+
+        /* ── Search Pulse ── */
+        .search-icon {
+            display: inline-block;
+            margin-top: 4px;
+            animation: pulse-search 0.6s infinite alternate;
+        }
+        @keyframes pulse-search {
+            0% { opacity: 0.4; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* ── Source Badges ── */
+        .source-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .source-badge {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: var(--blue-light);
+            background: var(--blue-soft);
+            border: 1px solid rgba(74, 124, 165, 0.15);
+            padding: 2px 10px;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: all 0.3s ease;
+        }
+        .source-badge.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Answer ── */
+        .answer-section {
+            margin-top: var(--space-lg);
+            padding: var(--space-md);
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--border-radius);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.5s ease;
+        }
+        .answer-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .answer-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: var(--space-sm);
+        }
+        .answer-text {
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            line-height: 1.75;
+        }
+        .answer-text .cite {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--blue);
         }
 
         /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .panels {
-                grid-template-columns: 1fr;
-            }
-
-            .doc-panel {
-                max-height: 360px;
-            }
-
-            .question-buttons {
+        @media (max-width: 900px) {
+            .demo-content {
                 flex-direction: column;
+                height: auto;
+            }
+            .doc-panel {
+                width: 100%;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .pipeline-panel {
+                width: 100%;
+                padding: var(--space-lg) var(--space-md);
             }
         }
     </style>
 </head>
 <body>
 
-<!-- ── Sticky Nav ── -->
+<!-- ── Nav Chrome ── -->
 <nav class="demo-nav">
-    <a href="/" class="demo-back">&#8592; Portfolio</a>
-    <img src="/assets/img/nv-logo-small.svg" alt="NV" class="demo-logo">
+    <a href="/" class="demo-back">&larr; Portfolio</a>
+    <span class="demo-nav-name">NV</span>
 </nav>
-
-<!-- ── Disclaimer ── -->
 <div class="demo-disclaimer">Interactive Demo &mdash; Simulated Data</div>
 
 <!-- ── Main Content ── -->
 <div class="demo-content">
 
-    <!-- Question Buttons -->
-    <div class="questions-section">
-        <div class="questions-label">Select a query</div>
-        <div class="question-buttons">
-            <button class="question-btn" data-q="0">What were the total revenues for Q3?</button>
-            <button class="question-btn" data-q="1">What are the key risk factors mentioned?</button>
-            <button class="question-btn" data-q="2">How did operating expenses change year-over-year?</button>
+    <!-- Left: Document Preview -->
+    <div class="doc-panel">
+        <div class="doc-header">
+            <div class="sec-title">United States Securities and Exchange Commission</div>
+            <div class="form-title">Form 10-Q</div>
+            <div class="company-name">DEMO CORP INC.</div>
+            <div class="period">For the quarterly period ended September 30, 2024</div>
+        </div>
+        <div class="doc-body">
+            <h3>Part I &mdash; Financial Information</h3>
+            <h3>Item 1. Financial Statements</h3>
+            <p>The accompanying unaudited condensed consolidated financial statements have been prepared in accordance with generally accepted accounting principles in the United States (&ldquo;U.S. GAAP&rdquo;) for interim financial information and the instructions to Form 10-Q and Article 10 of Regulation S-X. In the opinion of management, all adjustments (consisting of normal recurring adjustments) considered necessary for a fair presentation have been included.</p>
+
+            <h3>Condensed Consolidated Statements of Operations (Unaudited)</h3>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Q3 2024</th>
+                    <th>Q3 2023</th>
+                </tr>
+                <tr>
+                    <td>Total Revenues</td>
+                    <td>$847.3M</td>
+                    <td>$753.8M</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;Digital Services</td>
+                    <td>$412.1M</td>
+                    <td>$348.6M</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;Infrastructure Solutions</td>
+                    <td>$435.2M</td>
+                    <td>$405.2M</td>
+                </tr>
+                <tr>
+                    <td>Total Operating Expenses</td>
+                    <td>$665.7M</td>
+                    <td>$612.4M</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;R&D Expenses</td>
+                    <td>$164.6M</td>
+                    <td>$142.8M</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;Sales &amp; Marketing</td>
+                    <td>$287.3M</td>
+                    <td>$270.5M</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;General &amp; Administrative</td>
+                    <td>$213.8M</td>
+                    <td>$199.1M</td>
+                </tr>
+                <tr>
+                    <td>Operating Income</td>
+                    <td>$181.6M</td>
+                    <td>$141.4M</td>
+                </tr>
+                <tr>
+                    <td>Net Income</td>
+                    <td>$142.9M</td>
+                    <td>$108.7M</td>
+                </tr>
+            </table>
+            <div class="doc-page-num">- 14 -</div>
+
+            <h3>Item 1A. Risk Factors</h3>
+            <p>Investing in our securities involves a high degree of risk. You should carefully consider the following risk factors, together with all other information in this Quarterly Report on Form 10-Q, before investing in our common stock. If any of the following risks actually occur, our business, financial condition, and results of operations could be materially and adversely affected.</p>
+            <p><em>Competition.</em> The digital services market is intensely competitive, and we face increasing competition from both established technology companies and emerging startups with disruptive business models. Our competitors may have greater financial, technical, and marketing resources, and may be able to respond more quickly to new technologies or changes in customer preferences.</p>
+            <p><em>Data Privacy and Regulatory Compliance.</em> We operate in multiple jurisdictions with varying data privacy regulations, including GDPR, CCPA, and emerging frameworks in Asia-Pacific markets. Compliance with evolving regulations requires significant ongoing investment, and failure to comply could result in substantial fines and reputational damage.</p>
+            <p><em>Client Concentration.</em> Our three largest clients accounted for approximately 34% of total revenue for the nine months ended September 30, 2024. The loss of any one of these clients, or a significant reduction in their purchasing levels, could materially impact our financial results.</p>
+            <p><em>Supply Chain.</em> We depend on third-party hardware vendors and cloud infrastructure providers for critical components of our service delivery. Supply chain disruptions, including those caused by geopolitical tensions, natural disasters, or component shortages, could delay deployment timelines and negatively affect client satisfaction.</p>
+            <div class="doc-page-num">- 22 -</div>
+
+            <h3>Item 2. Management&rsquo;s Discussion and Analysis</h3>
+            <p>Total revenues for the three months ended September 30, 2024 increased $93.5 million, or 12.4%, to $847.3 million from $753.8 million for the three months ended September 30, 2023. This increase was primarily attributable to growth in our Digital Services segment, which benefited from expanded enterprise cloud migration contracts and increased demand for our AI-powered analytics platform.</p>
+            <p>Operating expenses for the three months ended September 30, 2024 were $665.7 million, an increase of 8.7% compared to $612.4 million for the three months ended September 30, 2023. The increase was driven primarily by higher research and development spending as we continue to invest in artificial intelligence and machine learning capabilities, partially offset by efficiency gains in general and administrative functions.</p>
+            <div class="doc-page-num">- 31 -</div>
+
+            <h3>Item 5. Other Information</h3>
+            <p>During the quarter ended September 30, 2024, no directors or officers adopted, modified, or terminated any Rule 10b5-1 trading arrangements or non-Rule 10b5-1 trading arrangements (as defined in Item 408(c) of Regulation S-K).</p>
+            <p>The Company maintains a share repurchase program authorized by the Board of Directors. As of September 30, 2024, approximately $234.7 million remained available for future repurchases under the existing authorization.</p>
+            <div class="doc-page-num">- 33 -</div>
         </div>
     </div>
 
-    <!-- Two-Panel Layout -->
-    <div class="panels">
-
-        <!-- Left: Document Preview -->
-        <div class="doc-panel">
-            <div class="doc-header">
-                <h1>United States Securities and Exchange Commission</h1>
-                <div class="doc-subtitle">Form 10-Q &mdash; Quarterly Report</div>
-                <div class="doc-filing-info">Filed: November 14, 2024 &bull; CIK: 0001923847</div>
-            </div>
-
-            <div class="doc-section">
-                <h2>Part I &mdash; Financial Information</h2>
-                <h2 style="font-size:0.85em; border:none; padding:0; margin-bottom:6px;">Item 1. Financial Statements</h2>
-                <p><strong>Demo Corp, Inc.</strong><br>Condensed Consolidated Statements of Operations<br>(In thousands, except per share data) (Unaudited)</p>
-
-                <table class="doc-table">
-                    <tr><th></th><th>Q3 2024</th><th>Q3 2023</th></tr>
-                    <tr><td>Net revenues</td><td id="rev-cell">$482,300</td><td>$413,600</td></tr>
-                    <tr><td>Cost of revenues</td><td>$271,400</td><td>$239,100</td></tr>
-                    <tr><td><strong>Gross profit</strong></td><td><strong>$210,900</strong></td><td><strong>$174,500</strong></td></tr>
-                    <tr><td>Operating expenses</td><td id="opex-cell">$148,200</td><td id="opex-prev-cell">$121,800</td></tr>
-                    <tr><td>R&amp;D expenses</td><td>$62,100</td><td>$51,400</td></tr>
-                    <tr><td>SG&amp;A expenses</td><td>$86,100</td><td>$70,400</td></tr>
-                    <tr><td><strong>Operating income</strong></td><td><strong>$62,700</strong></td><td><strong>$52,700</strong></td></tr>
-                    <tr><td>Net income</td><td>$47,200</td><td>$39,100</td></tr>
-                    <tr><td>EPS (diluted)</td><td>$1.84</td><td>$1.53</td></tr>
-                </table>
-                <div class="doc-page-num">Page 4 of 47</div>
-            </div>
-
-            <div class="doc-section">
-                <h2>Item 1A. Risk Factors</h2>
-                <p id="risk-p1">The Company operates in highly competitive markets. Changes in customer demand, technological developments, and pricing pressures from competitors could adversely impact our revenues and margins. There can be no assurance that Demo Corp will maintain its current market share in the enterprise analytics segment.</p>
-                <p id="risk-p2">Our operations are subject to regulatory requirements across multiple jurisdictions. Changes in data privacy laws, including the evolving interpretation of GDPR, CCPA, and similar frameworks, may require significant modifications to our data processing infrastructure and increase compliance costs.</p>
-                <p id="risk-p3">The Company relies on third-party cloud infrastructure providers. Service disruptions, security breaches, or significant price increases by these providers could materially affect our ability to deliver services and impact our cost structure.</p>
-                <div class="doc-page-num">Page 12 of 47</div>
-            </div>
-
-            <div class="doc-section">
-                <h2>Item 2. Management&rsquo;s Discussion &amp; Analysis</h2>
-                <p id="mda-p1">Total net revenues for Q3 2024 increased 16.6% year-over-year to $482.3 million, driven primarily by strong growth in our cloud platform segment, which grew 28.4% to $214.7 million. Enterprise license revenues declined modestly by 3.1% to $267.6 million, consistent with our ongoing transition to subscription-based offerings.</p>
-                <p id="mda-p2">Total operating expenses for the quarter were $148.2 million, an increase of 21.7% compared to $121.8 million in Q3 2023. This increase was driven primarily by higher R&amp;D investment in our AI-powered analytics capabilities ($62.1 million vs. $51.4 million) and increased SG&amp;A spending to support international expansion ($86.1 million vs. $70.4 million). As a percentage of revenue, operating expenses were 30.7% compared to 29.4% in the prior-year period.</p>
-                <div class="doc-page-num">Page 18 of 47</div>
+    <!-- Right: Pipeline & Results -->
+    <div class="pipeline-panel">
+        <div class="query-section">
+            <h2>Query Document</h2>
+            <div class="query-buttons">
+                <button class="query-btn" data-q="0">What were the total revenues for Q3 2024?</button>
+                <button class="query-btn" data-q="1">What are the key risk factors?</button>
+                <button class="query-btn" data-q="2">How did operating expenses change YoY?</button>
             </div>
         </div>
 
-        <!-- Right: Pipeline Panel -->
-        <div class="pipeline-panel">
-            <div class="pipeline-title">RAG Analysis Pipeline</div>
-            <div class="pipeline-stages">
-
-                <div class="stage" id="stage-parse">
-                    <div class="stage-label"><span class="status-icon"></span> Stage 1 &mdash; Document Parsing</div>
-                    <div class="stage-detail" id="detail-parse">Waiting...</div>
-                    <div class="progress-bar"><div class="progress-fill" id="parse-progress"></div></div>
+        <div class="pipeline-stages" id="pipeline">
+            <!-- Stage 0: Parse -->
+            <div class="stage" data-stage="0">
+                <div class="stage-indicator"></div>
+                <div class="stage-body">
+                    <div class="stage-label">Parsing document&hellip;</div>
+                    <div class="progress-bar-wrap" style="display:none;">
+                        <div class="progress-bar-fill"></div>
+                    </div>
                 </div>
-
-                <div class="stage" id="stage-chunk">
-                    <div class="stage-label"><span class="status-icon"></span> Stage 2 &mdash; Chunk Extraction</div>
-                    <div class="stage-detail" id="detail-chunk">Waiting...</div>
+            </div>
+            <!-- Stage 1: Chunks -->
+            <div class="stage" data-stage="1">
+                <div class="stage-indicator"></div>
+                <div class="stage-body">
+                    <div class="stage-label">Extracting chunks&hellip;</div>
+                    <div class="chunk-counter" style="display:none;"><span class="chunk-num">0</span> chunks identified</div>
                 </div>
-
-                <div class="stage" id="stage-graph">
-                    <div class="stage-label"><span class="status-icon"></span> Stage 3 &mdash; Retrieval Graph</div>
-                    <div class="stage-detail" id="detail-graph">Waiting...</div>
-                    <div class="graph-container">
-                        <svg viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
+            </div>
+            <!-- Stage 2: Graph -->
+            <div class="stage" data-stage="2">
+                <div class="stage-indicator"></div>
+                <div class="stage-body">
+                    <div class="stage-label">Building retrieval graph&hellip;</div>
+                    <div class="graph-wrap" style="display:none;">
+                        <svg width="150" height="100" viewBox="0 0 150 100">
                             <!-- Edges -->
-                            <line class="graph-edge" x1="30" y1="20" x2="70" y2="40"/>
-                            <line class="graph-edge" x1="30" y1="20" x2="90" y2="15"/>
-                            <line class="graph-edge" x1="70" y1="40" x2="110" y2="25"/>
-                            <line class="graph-edge" x1="90" y1="15" x2="110" y2="25"/>
-                            <line class="graph-edge" x1="110" y1="25" x2="150" y2="35"/>
-                            <line class="graph-edge" x1="90" y1="15" x2="150" y2="35"/>
-                            <line class="graph-edge" x1="70" y1="40" x2="130" y2="50"/>
-                            <line class="graph-edge" x1="130" y1="50" x2="150" y2="35"/>
+                            <line class="graph-edge" x1="30" y1="30" x2="75" y2="15"/>
+                            <line class="graph-edge" x1="75" y1="15" x2="120" y2="30"/>
+                            <line class="graph-edge" x1="30" y1="30" x2="55" y2="70"/>
+                            <line class="graph-edge" x1="75" y1="15" x2="55" y2="70"/>
+                            <line class="graph-edge" x1="120" y1="30" x2="100" y2="75"/>
+                            <line class="graph-edge" x1="55" y1="70" x2="100" y2="75"/>
+                            <line class="graph-edge" x1="100" y1="75" x2="135" y2="80"/>
+                            <!-- Retrieval path edges -->
+                            <line class="graph-edge retrieval" x1="30" y1="30" x2="55" y2="70"/>
+                            <line class="graph-edge retrieval" x1="55" y1="70" x2="100" y2="75"/>
                             <!-- Nodes -->
-                            <circle class="graph-node" cx="30" cy="20" r="4"/>
-                            <circle class="graph-node" cx="70" cy="40" r="4"/>
-                            <circle class="graph-node" cx="90" cy="15" r="4"/>
-                            <circle class="graph-node" cx="110" cy="25" r="4"/>
-                            <circle class="graph-node" cx="130" cy="50" r="4"/>
-                            <circle class="graph-node" cx="150" cy="35" r="4"/>
+                            <circle class="graph-node" cx="30" cy="30" r="5"/>
+                            <circle class="graph-node" cx="75" cy="15" r="5"/>
+                            <circle class="graph-node" cx="120" cy="30" r="5"/>
+                            <circle class="graph-node" cx="55" cy="70" r="5"/>
+                            <circle class="graph-node" cx="100" cy="75" r="5"/>
+                            <circle class="graph-node" cx="135" cy="80" r="4"/>
                         </svg>
                     </div>
                 </div>
-
-                <div class="stage" id="stage-query">
-                    <div class="stage-label"><span class="status-icon"></span> Stage 4 &mdash; Semantic Search</div>
-                    <div class="stage-detail" id="detail-query">Waiting...</div>
-                </div>
-
-                <div class="stage" id="stage-retrieve">
-                    <div class="stage-label"><span class="status-icon"></span> Stage 5 &mdash; Retrieval</div>
-                    <div class="stage-detail" id="detail-retrieve">Waiting...</div>
-                </div>
-
             </div>
-
-            <!-- Answer -->
-            <div class="answer-box" id="answer-box">
-                <div class="answer-label">Generated Answer</div>
-                <div class="answer-text" id="answer-text"></div>
-                <div class="answer-sources" id="answer-sources"></div>
+            <!-- Stage 3: Query -->
+            <div class="stage" data-stage="3">
+                <div class="stage-indicator"></div>
+                <div class="stage-body">
+                    <div class="stage-label">Querying&hellip;</div>
+                    <div class="search-icon" style="display:none;">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <circle cx="7.5" cy="7.5" r="5.5" stroke="var(--blue-light)" stroke-width="1.5"/>
+                            <line x1="11.5" y1="11.5" x2="16" y2="16" stroke="var(--blue-light)" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <!-- Stage 4: Retrieved -->
+            <div class="stage" data-stage="4">
+                <div class="stage-indicator"></div>
+                <div class="stage-body">
+                    <div class="stage-label">Retrieved <span class="retrieved-count">0</span> relevant chunks</div>
+                    <div class="source-badges" style="display:none;"></div>
+                </div>
             </div>
         </div>
 
+        <!-- Answer -->
+        <div class="answer-section" id="answer">
+            <div class="answer-label">Answer</div>
+            <div class="answer-text"></div>
+        </div>
     </div>
 </div>
 
 <!-- ── About Footer ── -->
 <footer class="demo-about">
     <h2>About This Project</h2>
-    <p>
-        This demo illustrates a hybrid Retrieval-Augmented Generation pipeline designed for
-        financial document analysis. The system combines dense vector retrieval with graph-based
-        chunk linking to surface the most relevant passages from SEC filings, earnings reports,
-        and corporate disclosures. Evaluation is handled via DeepEval metrics to ensure factual
-        grounding and citation accuracy.
-    </p>
-    <p>
-        All data shown is fictional and generated for demonstration purposes.
-        No real financial instruments or companies are referenced.
-    </p>
+    <p>Built as the AI Engineering capstone project at Ben Gurion University. A specialized RAG system for SEC 10-Q financial document analysis combining graph-enhanced hybrid retrieval with traditional vector search. Processed 73-page documents at 146% above course requirements with zero accuracy degradation. Integrated DeepEval for real-time evaluation with explainable AI reasoning.</p>
     <div class="demo-tags">
         <span class="demo-tag">RAG</span>
         <span class="demo-tag">Graph Retrieval</span>
@@ -587,130 +589,161 @@
 </footer>
 
 <script>
-(function () {
-    'use strict';
-
-    /* ── Canned Answers ── */
+(function() {
     const answers = [
         {
-            text: 'Total net revenues for Demo Corp in Q3 2024 were $482.3 million, representing a 16.6% increase compared to $413.6 million in Q3 2023. Cloud platform revenues grew 28.4% to $214.7 million, while enterprise license revenues declined 3.1% to $267.6 million, reflecting the company\'s ongoing shift toward subscription-based models.',
-            sources: ['Page 4 — Financial Statements', 'Page 18 — MD&A Revenue Discussion'],
-            highlights: ['rev-cell', 'mda-p1']
+            text: 'Total revenues for Q3 2024 were $847.3 million, representing a 12.4% increase from $753.8 million in Q3 2023. The growth was primarily driven by a 18.2% increase in the Digital Services segment ($412.1M) and a 7.8% increase in Infrastructure Solutions ($435.2M). <span class="cite">[Source: Page 14, Page 31]</span>',
+            sources: ['Page 14', 'Page 31'],
+            chunks: 3
         },
         {
-            text: 'The filing identifies three principal risk factors: (1) competitive pressures in the enterprise analytics market that could erode market share and compress margins; (2) evolving data privacy regulations (GDPR, CCPA, and related frameworks) requiring ongoing infrastructure modifications and increasing compliance costs; and (3) dependency on third-party cloud infrastructure providers, exposing the company to service disruption and pricing risks.',
-            sources: ['Page 12 — Risk Factor 1: Market Competition', 'Page 12 — Risk Factor 2: Regulatory', 'Page 12 — Risk Factor 3: Infrastructure'],
-            highlights: ['risk-p1', 'risk-p2', 'risk-p3']
+            text: 'Key risk factors include: (1) Increasing competition in the digital services market from both established players and emerging startups, (2) Regulatory uncertainty regarding data privacy compliance across multiple jurisdictions, (3) Dependency on three major clients representing approximately 34% of total revenue, and (4) Potential supply chain disruptions affecting hardware deployment timelines. <span class="cite">[Source: Page 22-24]</span>',
+            sources: ['Page 22', 'Page 23', 'Page 24'],
+            chunks: 5
         },
         {
-            text: 'Total operating expenses rose 21.7% year-over-year, from $121.8 million in Q3 2023 to $148.2 million in Q3 2024. R&D spending increased 20.8% ($51.4M to $62.1M) driven by AI analytics investment, while SG&A grew 22.3% ($70.4M to $86.1M) to support international expansion. As a share of revenue, operating expenses edged up from 29.4% to 30.7%.',
-            sources: ['Page 4 — Financial Statements', 'Page 18 — MD&A Operating Expenses'],
-            highlights: ['opex-cell', 'opex-prev-cell', 'mda-p2']
+            text: 'Total operating expenses increased 8.7% year-over-year, from $612.4 million in Q3 2023 to $665.7 million in Q3 2024. Research and development expenses saw the largest increase at 15.3% ($142.8M to $164.6M), reflecting increased investment in AI capabilities. Sales and marketing expenses grew 6.2%, while general and administrative expenses declined 2.1%. <span class="cite">[Source: Page 16, Page 33]</span>',
+            sources: ['Page 16', 'Page 33'],
+            chunks: 4
         }
     ];
 
-    const stages = ['stage-parse', 'stage-chunk', 'stage-graph', 'stage-query', 'stage-retrieve'];
-    const details = ['detail-parse', 'detail-chunk', 'detail-graph', 'detail-query', 'detail-retrieve'];
+    const stages = document.querySelectorAll('.stage');
+    const answerEl = document.getElementById('answer');
+    const btns = document.querySelectorAll('.query-btn');
     let running = false;
 
-    /* ── Helpers ── */
-    function $(id) { return document.getElementById(id); }
-    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-
     function resetPipeline() {
-        stages.forEach(id => {
-            const el = $(id);
-            el.classList.remove('active', 'complete');
+        stages.forEach(s => {
+            s.classList.remove('active', 'completed');
+            const pb = s.querySelector('.progress-bar-wrap');
+            if (pb) { pb.style.display = 'none'; pb.querySelector('.progress-bar-fill').style.width = '0%'; }
+            const cc = s.querySelector('.chunk-counter');
+            if (cc) { cc.style.display = 'none'; cc.querySelector('.chunk-num').textContent = '0'; }
+            const gw = s.querySelector('.graph-wrap');
+            if (gw) {
+                gw.style.display = 'none';
+                gw.querySelectorAll('.graph-node, .graph-edge').forEach(el => el.classList.remove('visible'));
+            }
+            const si = s.querySelector('.search-icon');
+            if (si) si.style.display = 'none';
+            const sb = s.querySelector('.source-badges');
+            if (sb) { sb.style.display = 'none'; sb.innerHTML = ''; }
         });
-        details.forEach(id => { $(id).textContent = 'Waiting...'; });
-        $('answer-box').classList.remove('visible');
-        $('answer-text').textContent = '';
-        $('answer-sources').innerHTML = '';
-        // Clear highlights
-        document.querySelectorAll('.doc-highlight').forEach(el => el.classList.remove('doc-highlight'));
+        answerEl.classList.remove('visible');
+        answerEl.querySelector('.answer-text').innerHTML = '';
     }
 
-    function activateStage(i, detail) {
-        const el = $(stages[i]);
-        el.classList.add('active');
-        $(details[i]).innerHTML = detail;
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function animateChunks(el, target) {
+        let n = 0;
+        const step = Math.max(1, Math.floor(target / 40));
+        const numEl = el.querySelector('.chunk-num');
+        while (n < target) {
+            n = Math.min(n + step, target);
+            numEl.textContent = n;
+            await delay(20);
+        }
     }
 
-    function completeStage(i, detail) {
-        const el = $(stages[i]);
-        el.classList.remove('active');
-        el.classList.add('complete');
-        if (detail) $(details[i]).innerHTML = detail;
+    async function animateGraph(wrap) {
+        const nodes = wrap.querySelectorAll('.graph-node');
+        const edges = wrap.querySelectorAll('.graph-edge:not(.retrieval)');
+        const retrieval = wrap.querySelectorAll('.graph-edge.retrieval');
+
+        for (let i = 0; i < nodes.length; i++) {
+            nodes[i].classList.add('visible');
+            if (edges[i]) edges[i].classList.add('visible');
+            await delay(150);
+        }
+        for (const e of edges) { e.classList.add('visible'); }
+        await delay(200);
+        for (const r of retrieval) { r.classList.add('visible'); }
     }
 
-    /* ── Pipeline Runner ── */
-    async function runPipeline(qi) {
+    async function runPipeline(qIdx) {
         if (running) return;
         running = true;
+        const data = answers[qIdx];
 
-        const btns = document.querySelectorAll('.question-btn');
-        btns.forEach(b => b.disabled = true);
-        btns[qi].classList.add('selected');
-
+        btns.forEach(b => b.classList.remove('active'));
+        btns[qIdx].classList.add('active');
         resetPipeline();
-        await wait(200);
+        await delay(100);
 
-        // Stage 1: Parse
-        activateStage(0, 'Parsing document...');
-        await wait(1000);
-        completeStage(0, '47 pages parsed &bull; 12 tables detected');
+        // Stage 0: Parse
+        const s0 = stages[0];
+        s0.classList.add('active');
+        const pb = s0.querySelector('.progress-bar-wrap');
+        pb.style.display = 'block';
+        await delay(50);
+        pb.querySelector('.progress-bar-fill').style.width = '100%';
+        await delay(1500);
+        s0.classList.remove('active');
+        s0.classList.add('completed');
 
-        // Stage 2: Chunk
-        await wait(300);
-        activateStage(1, 'Extracting chunks...');
-        await wait(900);
-        completeStage(1, '47 chunks identified &bull; avg 312 tokens');
+        // Stage 1: Chunks
+        const s1 = stages[1];
+        s1.classList.add('active');
+        const cc = s1.querySelector('.chunk-counter');
+        cc.style.display = 'block';
+        await animateChunks(cc, 47);
+        await delay(300);
+        s1.classList.remove('active');
+        s1.classList.add('completed');
 
-        // Stage 3: Graph
-        await wait(300);
-        activateStage(2, 'Building retrieval graph...');
-        await wait(1200);
-        completeStage(2, '6 nodes &bull; 8 edges &bull; 3 clusters');
+        // Stage 2: Graph
+        const s2 = stages[2];
+        s2.classList.add('active');
+        const gw = s2.querySelector('.graph-wrap');
+        gw.style.display = 'block';
+        await animateGraph(gw);
+        await delay(400);
+        s2.classList.remove('active');
+        s2.classList.add('completed');
 
-        // Stage 4: Query
-        await wait(300);
-        activateStage(3, 'Querying<span class="search-dots"><span></span><span></span><span></span></span>');
-        await wait(1100);
-        completeStage(3, 'Embedding similarity computed');
+        // Stage 3: Query
+        const s3 = stages[3];
+        s3.classList.add('active');
+        s3.querySelector('.search-icon').style.display = 'inline-block';
+        await delay(1000);
+        s3.querySelector('.search-icon').style.display = 'none';
+        s3.classList.remove('active');
+        s3.classList.add('completed');
 
-        // Stage 5: Retrieve
-        await wait(300);
-        activateStage(4, 'Retrieving relevant chunks...');
-        await wait(800);
-        completeStage(4, 'Retrieved 4 relevant chunks &bull; top score: 0.94');
+        // Stage 4: Retrieved
+        const s4 = stages[4];
+        s4.classList.add('active');
+        s4.querySelector('.retrieved-count').textContent = data.chunks;
+        const sb = s4.querySelector('.source-badges');
+        sb.style.display = 'flex';
+        for (const src of data.sources) {
+            const badge = document.createElement('span');
+            badge.className = 'source-badge';
+            badge.textContent = src;
+            sb.appendChild(badge);
+            await delay(150);
+            badge.classList.add('visible');
+        }
+        await delay(300);
+        s4.classList.remove('active');
+        s4.classList.add('completed');
 
-        // Highlight sources in document
-        const answer = answers[qi];
-        answer.highlights.forEach(id => {
-            const el = $(id);
-            if (el) el.classList.add('doc-highlight');
-        });
-
-        // Show answer
-        await wait(400);
-        $('answer-text').textContent = answer.text;
-        $('answer-sources').innerHTML = answer.sources
-            .map(s => '<span class="source-tag">' + s + '</span>')
-            .join('');
-        $('answer-box').classList.add('visible');
+        // Answer
+        answerEl.querySelector('.answer-text').innerHTML = data.text;
+        await delay(100);
+        answerEl.classList.add('visible');
 
         running = false;
-        btns.forEach(b => b.disabled = false);
     }
 
-    /* ── Bind Buttons ── */
-    document.querySelectorAll('.question-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.question-btn').forEach(b => b.classList.remove('selected'));
-            runPipeline(parseInt(this.dataset.q, 10));
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const q = parseInt(btn.getAttribute('data-q'), 10);
+            runPipeline(q);
         });
     });
-
 })();
 </script>
 </body>
