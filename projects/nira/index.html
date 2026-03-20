@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIRA — Natural IVF Response Assistant</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/css/demo-base.css">
+
+    <style>
+        /* ══════════════════════════════════════════════════════════
+           NIRA Chat UI — Inline Styles
+           ══════════════════════════════════════════════════════════ */
+
+        /* ── Medical accent color ── */
+        :root {
+            --medical-teal: #4db6ac;
+            --medical-teal-soft: rgba(77, 182, 172, 0.12);
+            --medical-teal-border: rgba(77, 182, 172, 0.25);
+            --chat-bg: #0d1220;
+            --bubble-patient: rgba(74, 124, 165, 0.22);
+            --bubble-patient-border: rgba(106, 158, 196, 0.3);
+            --bubble-nira: rgba(77, 182, 172, 0.1);
+            --bubble-nira-border: rgba(77, 182, 172, 0.2);
+        }
+
+        /* ── Chat container ── */
+        .chat-wrapper {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .chat-header {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .chat-header h1 {
+            font-family: var(--font-display);
+            font-size: 1.5em;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .chat-header h1 span {
+            color: var(--medical-teal);
+        }
+
+        .chat-header p {
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            letter-spacing: 0.03em;
+        }
+
+        /* ── Chat window ── */
+        .chat-window {
+            background: var(--chat-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            min-height: 420px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-window::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-window::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb {
+            background: var(--border-hover);
+            border-radius: 3px;
+        }
+
+        /* ── Message bubbles ── */
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 85%;
+            animation: slideIn 0.35s ease-out both;
+        }
+
+        .message.patient {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.nira {
+            align-self: flex-start;
+        }
+
+        .message-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-size: 0.85em;
+        }
+
+        .nira .message-icon {
+            background: var(--medical-teal-soft);
+            border: 1px solid var(--medical-teal-border);
+            color: var(--medical-teal);
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.88em;
+            line-height: 1.65;
+        }
+
+        .patient .message-bubble {
+            background: var(--bubble-patient);
+            border: 1px solid var(--bubble-patient-border);
+            color: var(--accent-blue-light);
+            border-bottom-right-radius: 4px;
+        }
+
+        .nira .message-bubble {
+            background: var(--bubble-nira);
+            border: 1px solid var(--bubble-nira-border);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* ── Typing indicator ── */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 14px 20px;
+            align-items: center;
+        }
+
+        .typing-indicator .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--medical-teal);
+            opacity: 0.4;
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.15s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.85); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Question buttons ── */
+        .questions-area {
+            padding: 20px 0 8px;
+        }
+
+        .questions-label {
+            font-family: var(--font-mono);
+            font-size: 0.7em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .question-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.82em;
+            line-height: 1.45;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .question-btn:hover:not(:disabled) {
+            background: var(--bg-card-hover);
+            border-color: var(--medical-teal-border);
+            color: var(--medical-teal);
+        }
+
+        .question-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        /* ── Start Over button ── */
+        .reset-btn {
+            display: none;
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--medical-teal-soft);
+            border: 1px solid var(--medical-teal-border);
+            border-radius: var(--radius-md);
+            color: var(--medical-teal);
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            background: rgba(77, 182, 172, 0.2);
+            border-color: var(--medical-teal);
+        }
+
+        .reset-btn.visible {
+            display: block;
+            animation: slideIn 0.35s ease-out;
+        }
+
+        /* ── Demo content area override ── */
+        .demo-content {
+            max-width: 100%;
+            padding: 0 0 32px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .chat-wrapper {
+                padding: 0 16px;
+            }
+
+            .chat-header {
+                padding: 24px 0 16px;
+            }
+
+            .chat-header h1 {
+                font-size: 1.2em;
+            }
+
+            .chat-window {
+                min-height: 350px;
+                max-height: 440px;
+                padding: 16px 14px;
+            }
+
+            .message {
+                max-width: 92%;
+            }
+
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message-bubble {
+                font-size: 0.84em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Nav ── -->
+    <nav class="demo-nav">
+        <a href="/" class="demo-back">← Portfolio</a>
+        <img src="/assets/img/nv-logo-small.svg" alt="NV" class="demo-logo">
+    </nav>
+
+    <!-- ── Disclaimer ── -->
+    <div class="demo-disclaimer">Interactive Demo — Simulated Data</div>
+
+    <!-- ── Main Content ── -->
+    <main class="demo-content">
+        <div class="chat-wrapper">
+
+            <div class="chat-header">
+                <h1><span>NIRA</span> Chat</h1>
+                <p>Natural IVF Response Assistant</p>
+            </div>
+
+            <!-- Chat window -->
+            <div class="chat-window" id="chatWindow">
+                <!-- Welcome message injected by JS -->
+            </div>
+
+            <!-- Question buttons -->
+            <div class="questions-area">
+                <div class="questions-label">Ask NIRA a question</div>
+                <div class="questions-grid" id="questionsGrid">
+                    <button class="question-btn" data-q="0">What should I expect during my first IVF cycle?</button>
+                    <button class="question-btn" data-q="1">Are there side effects from the medications?</button>
+                    <button class="question-btn" data-q="2">How should I prepare for egg retrieval?</button>
+                    <button class="question-btn" data-q="3">What are the success rates?</button>
+                </div>
+                <button class="reset-btn" id="resetBtn">Start Over</button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ── About Footer ── -->
+    <footer class="demo-about">
+        <h2>About This Project</h2>
+        <p>
+            NIRA (Natural IVF Response Assistant) is a conversational AI prototype designed
+            to support patients navigating the IVF process. It provides clear, empathetic
+            answers to common fertility treatment questions while always encouraging patients
+            to consult their care team for personalized guidance.
+        </p>
+        <p>
+            This demo showcases a chat-based interface with pre-composed clinical responses.
+            In a production system, responses would be generated by a fine-tuned language model
+            with retrieval-augmented generation grounded in peer-reviewed reproductive medicine
+            literature.
+        </p>
+        <div class="demo-tags">
+            <span class="demo-tag">Conversational AI</span>
+            <span class="demo-tag">Healthcare UX</span>
+            <span class="demo-tag">NLP</span>
+            <span class="demo-tag">Patient Education</span>
+            <span class="demo-tag">RAG Pipeline</span>
+            <span class="demo-tag">Prompt Engineering</span>
+            <span class="demo-tag">Vanilla JS</span>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        /* ── Pre-written NIRA responses ── */
+        const responses = {
+            0: {
+                question: "What should I expect during my first IVF cycle?",
+                answer: "Your first IVF cycle typically spans 4–6 weeks and follows a structured sequence. It begins with ovarian stimulation, where you'll take injectable hormones for about 10–12 days to encourage multiple follicles to develop. During this phase, you'll have regular monitoring appointments — usually blood work and ultrasounds every 2–3 days. Once your follicles reach the right size, a trigger shot is administered, and egg retrieval is scheduled roughly 36 hours later. After retrieval, the embryology team handles fertilization and culture, and you'll receive updates on embryo development over the next 5–7 days. Your doctor will then discuss whether a fresh transfer or a freeze-all approach is best for you. It can feel like a lot, but your care team will guide you through each step."
+            },
+            1: {
+                question: "Are there side effects from the medications?",
+                answer: "Fertility medications can cause a range of side effects, most of which are manageable. Common experiences include bloating, mild pelvic discomfort, breast tenderness, mood fluctuations, and fatigue — similar to premenstrual symptoms but sometimes more pronounced. Injection-site reactions like redness or mild bruising are also normal. A small percentage of patients may develop Ovarian Hyperstimulation Syndrome (OHSS), which your clinic monitors closely through ultrasound and blood work. Symptoms of OHSS include significant bloating, nausea, and rapid weight gain — if you experience these, contact your clinic right away. Most side effects resolve within a week or two after your cycle concludes. Always report anything that feels unusual to your care team."
+            },
+            2: {
+                question: "How should I prepare for egg retrieval?",
+                answer: "Preparation for egg retrieval is straightforward but important. In the days leading up, stay well-hydrated and eat balanced, protein-rich meals. You'll receive specific timing instructions for your trigger shot — this must be administered precisely as directed, since retrieval timing depends on it. The night before, you'll typically be asked to fast after midnight (no food or drink). On the day of the procedure, wear comfortable clothing, leave jewelry at home, and arrange for someone to drive you, as light sedation is used. The retrieval itself usually takes 15–20 minutes. Afterward, plan for a quiet rest day — mild cramping and spotting are common and typically resolve within 24–48 hours. Your clinic will contact you the following day with a fertilization report."
+            },
+            3: {
+                question: "What are the success rates?",
+                answer: "IVF success rates depend on several individual factors, including age, diagnosis, egg quality, and the clinic's protocols. As a general benchmark, national averages for live birth rates per embryo transfer are roughly 50–55% for patients under 35, 38–42% for ages 35–37, 25–30% for ages 38–40, and 12–18% for ages 41–42. These numbers have been improving steadily thanks to advances in embryo culture, genetic testing (PGT-A), and vitrification techniques. Keep in mind that cumulative success — meaning the chance of a live birth across multiple transfers from a single egg retrieval — is often considerably higher than per-transfer rates. Your reproductive endocrinologist can provide a more personalized estimate based on your specific clinical profile."
+            }
+        };
+
+        const chatWindow = document.getElementById('chatWindow');
+        const questionsGrid = document.getElementById('questionsGrid');
+        const resetBtn = document.getElementById('resetBtn');
+        const buttons = questionsGrid.querySelectorAll('.question-btn');
+        let answeredCount = 0;
+
+        /* ── Medical cross icon (SVG inline) ── */
+        const niraIcon = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.5 2h3v4.5H14v3H9.5V14h-3V9.5H2v-3h4.5V2z" fill="currentColor" opacity="0.8"/></svg>';
+
+        /* ── Create a message element ── */
+        function createMessage(type, text) {
+            const msg = document.createElement('div');
+            msg.className = 'message ' + type;
+
+            if (type === 'nira') {
+                const icon = document.createElement('div');
+                icon.className = 'message-icon';
+                icon.innerHTML = niraIcon;
+                msg.appendChild(icon);
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+            msg.appendChild(bubble);
+
+            return msg;
+        }
+
+        /* ── Create typing indicator ── */
+        function createTyping() {
+            const msg = document.createElement('div');
+            msg.className = 'message nira';
+
+            const icon = document.createElement('div');
+            icon.className = 'message-icon';
+            icon.innerHTML = niraIcon;
+            msg.appendChild(icon);
+
+            const indicator = document.createElement('div');
+            indicator.className = 'message-bubble typing-indicator';
+            indicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            msg.appendChild(indicator);
+
+            return msg;
+        }
+
+        /* ── Scroll to bottom ── */
+        function scrollToBottom() {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        /* ── Welcome message on load ── */
+        function showWelcome() {
+            const welcome = createMessage('nira',
+                "Hello! I'm NIRA, your Natural IVF Response Assistant. I'm here to help answer common questions about the IVF process. Please select a question below to get started — and remember, always consult your care team for advice specific to your situation."
+            );
+            chatWindow.appendChild(welcome);
+        }
+
+        /* ── Handle question click ── */
+        function handleQuestion(index) {
+            const data = responses[index];
+            const btn = buttons[index];
+
+            /* Disable clicked button */
+            btn.disabled = true;
+
+            /* Add patient message */
+            const patientMsg = createMessage('patient', data.question);
+            chatWindow.appendChild(patientMsg);
+            scrollToBottom();
+
+            /* Show typing indicator */
+            const typing = createTyping();
+            setTimeout(function () {
+                chatWindow.appendChild(typing);
+                scrollToBottom();
+            }, 300);
+
+            /* Replace typing with response after 800ms */
+            setTimeout(function () {
+                chatWindow.removeChild(typing);
+                const niraMsg = createMessage('nira', data.answer);
+                chatWindow.appendChild(niraMsg);
+                scrollToBottom();
+
+                answeredCount++;
+                if (answeredCount >= 4) {
+                    resetBtn.classList.add('visible');
+                }
+            }, 1100); /* 300ms delay + 800ms typing = 1100ms total */
+        }
+
+        /* ── Button event listeners ── */
+        buttons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var idx = parseInt(this.getAttribute('data-q'), 10);
+                handleQuestion(idx);
+            });
+        });
+
+        /* ── Reset ── */
+        resetBtn.addEventListener('click', function () {
+            chatWindow.innerHTML = '';
+            answeredCount = 0;
+            resetBtn.classList.remove('visible');
+            buttons.forEach(function (btn) { btn.disabled = false; });
+            showWelcome();
+        });
+
+        /* ── Init ── */
+        showWelcome();
+    })();
+    </script>
+
+</body>
+</html>
