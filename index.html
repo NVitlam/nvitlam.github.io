@@ -4,45 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nadav Vitlam — Solution Architect | AI Spec Developer</title>
-    <meta name="description" content="Independent Solution Architect and AI Spec Developer with 17 years of enterprise RTLS/IoT infrastructure experience. Specializing in healthcare systems, AI engineering, and intelligent automation.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta name="description" content="Independent Solution Architect and AI Spec Developer. 17 years of enterprise RTLS, IoT infrastructure, and AI engineering. Specializing in pharmaceutical cold chain, healthcare systems, and intelligent automation.">
+    <link rel="stylesheet" href="/assets/css/tokens.css">
     <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
-    <!-- Subtle network background pattern -->
-    <svg class="network-bg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-        <defs>
-            <pattern id="net" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
-                <circle cx="10" cy="10" r="1.5" fill="#4a7ca5" opacity="0.3"/>
-                <circle cx="60" cy="30" r="1" fill="#4a7ca5" opacity="0.2"/>
-                <circle cx="110" cy="60" r="1.5" fill="#4a7ca5" opacity="0.3"/>
-                <circle cx="40" cy="80" r="1" fill="#4a7ca5" opacity="0.2"/>
-                <circle cx="90" cy="110" r="1.5" fill="#4a7ca5" opacity="0.25"/>
-                <line x1="10" y1="10" x2="60" y2="30" stroke="#c44b2b" stroke-width="0.5" opacity="0.15"/>
-                <line x1="60" y1="30" x2="110" y2="60" stroke="#4a7ca5" stroke-width="0.5" opacity="0.12"/>
-                <line x1="40" y1="80" x2="90" y2="110" stroke="#c44b2b" stroke-width="0.5" opacity="0.15"/>
-                <line x1="10" y1="10" x2="40" y2="80" stroke="#4a7ca5" stroke-width="0.5" opacity="0.1"/>
-            </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#net)"/>
-    </svg>
+    <canvas id="network-bg"></canvas>
 
     <div class="site">
-        <!-- ═══ Hero ═══ -->
+
+        <!-- ══════ HERO ══════ -->
         <header class="hero">
-            <img src="/assets/img/nv-logo.svg" alt="NV Network Logo" class="hero-logo">
+
+            <!-- NV LOGO: Abstract "N" network graph. ~18 nodes, ~20 edges.
+                 Left vertical: 4 nodes at roughly x=25.
+                 Diagonal: 4 nodes going from top-left to bottom-right.
+                 Right vertical: 4 nodes at roughly x=95.
+                 Additional satellite nodes for visual complexity.
+                 Blue = primary nodes/edges. Orange = accent nodes/diagonal edges. -->
+            <svg class="hero-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="NV Logo">
+                <!-- Edges first (behind nodes) -->
+                <!-- Left vertical edges -->
+                <line class="edge" x1="22" y1="15" x2="22" y2="42"/>
+                <line class="edge" x1="22" y1="42" x2="25" y2="70"/>
+                <line class="edge" x1="25" y1="70" x2="22" y2="100"/>
+                <!-- Right vertical edges -->
+                <line class="edge" x1="98" y1="20" x2="95" y2="48"/>
+                <line class="edge" x1="95" y1="48" x2="98" y2="75"/>
+                <line class="edge" x1="98" y1="75" x2="95" y2="105"/>
+                <!-- Diagonal edges (orange — the "N" crossbar) -->
+                <line class="edge-accent" x1="22" y1="15" x2="48" y2="40"/>
+                <line class="edge-accent" x1="48" y1="40" x2="72" y2="65"/>
+                <line class="edge-accent" x1="72" y1="65" x2="95" y2="105"/>
+                <!-- Cross-connections for network feel -->
+                <line class="edge" x1="22" y1="42" x2="48" y2="40"/>
+                <line class="edge" x1="48" y1="40" x2="95" y2="48"/>
+                <line class="edge" x1="25" y1="70" x2="72" y2="65"/>
+                <line class="edge" x1="72" y1="65" x2="98" y2="75"/>
+                <line class="edge" x1="22" y1="100" x2="72" y2="65"/>
+                <!-- Satellite connections -->
+                <line class="edge" x1="8" y1="55" x2="22" y2="42"/>
+                <line class="edge" x1="8" y1="55" x2="25" y2="70"/>
+                <line class="edge" x1="110" y1="35" x2="98" y2="20"/>
+                <line class="edge" x1="110" y1="35" x2="95" y2="48"/>
+                <line class="edge" x1="60" y1="10" x2="48" y2="40"/>
+                <line class="edge" x1="60" y1="10" x2="22" y2="15"/>
+                <line class="edge" x1="55" y1="110" x2="22" y2="100"/>
+                <line class="edge" x1="55" y1="110" x2="95" y2="105"/>
+
+                <!-- Main nodes — Left vertical (blue) -->
+                <circle class="node" cx="22" cy="15" r="4"/>
+                <circle class="node" cx="22" cy="42" r="3.5"/>
+                <circle class="node" cx="25" cy="70" r="3"/>
+                <circle class="node" cx="22" cy="100" r="4"/>
+                <!-- Main nodes — Right vertical (blue) -->
+                <circle class="node" cx="98" cy="20" r="3.5"/>
+                <circle class="node" cx="95" cy="48" r="3"/>
+                <circle class="node" cx="98" cy="75" r="3.5"/>
+                <circle class="node" cx="95" cy="105" r="4"/>
+                <!-- Diagonal nodes (orange accents) -->
+                <circle class="node-accent" cx="48" cy="40" r="3.5"/>
+                <circle class="node-accent" cx="72" cy="65" r="4"/>
+                <!-- Satellite nodes (smaller, blue) -->
+                <circle class="node" cx="8" cy="55" r="2"/>
+                <circle class="node" cx="110" cy="35" r="2"/>
+                <circle class="node" cx="60" cy="10" r="2.5"/>
+                <circle class="node" cx="55" cy="110" r="2"/>
+            </svg>
+
             <h1 class="hero-name">Nadav Vitlam</h1>
+
             <div class="hero-titles">
-                <span class="pipe">|</span> Solution Architect
-                <span class="pipe">|</span> AI Spec Developer
+                <div class="hero-title"><span class="pipe">|</span>Solution Architect</div>
+                <div class="hero-title"><span class="pipe">|</span>AI Spec Developer</div>
             </div>
-            <div class="hero-specialties">RTLS &middot; IoT &middot; AI Engineering &middot; Healthcare Infra</div>
+
+            <div class="hero-domains">
+                RTLS<span class="dot">·</span>IoT<span class="dot">·</span>AI Engineering<span class="dot">·</span>Healthcare Infrastructure
+            </div>
+
             <div class="status-badge">
                 <span class="status-dot"></span>
                 Available for Projects
             </div>
+
             <div class="contact-row">
                 <a href="mailto:nadavvitlam@outlook.com">nadavvitlam@outlook.com</a>
                 <a href="tel:+972546528158">+972-54-652-8158</a>
@@ -51,149 +96,146 @@
             </div>
         </header>
 
-        <!-- ═══ About ═══ -->
+        <!-- ══════ ABOUT ══════ -->
         <section class="section reveal">
-            <div class="section-label"><span class="pipe">|</span> About</div>
+            <div class="section-label">About</div>
             <div class="about-text">
-                <p>17 years designing, deploying, and managing enterprise RTLS and IoT infrastructure &mdash; pharmaceutical cold chain protection, healthcare asset tracking, temperature monitoring at national scale. Responsible for 17 active enterprise deployments across 1,000+ healthcare facilities and 300+ retail locations. Second-in-command of the RTLS department at 2Plus Wireless Solutions, Aruba Gold Partner.</p>
+                <p><strong>17 years designing, deploying, and managing enterprise RTLS and IoT infrastructure</strong> — pharmaceutical cold chain protection, healthcare asset tracking, temperature monitoring at national scale. Responsible for 17 active enterprise deployments across 1,000+ healthcare facilities and 300+ retail locations. Second-in-command of the RTLS department at 2Plus Wireless Solutions, Aruba Gold Partner.</p>
                 <p>Completed AI Engineering certification at Ben Gurion University. Invited back as Course Practitioner. Built production AI systems: multi-model security automation, healthcare NLP, hybrid RAG, recruitment screening with prompt injection defense. Now offering both disciplines as an independent consultant.</p>
             </div>
         </section>
 
-        <!-- ═══ Projects ═══ -->
+        <!-- ══════ PROJECTS ══════ -->
         <section class="section reveal">
-            <div class="section-label"><span class="pipe">|</span> Projects</div>
-            <div class="project-grid" id="project-grid"></div>
+            <div class="section-label">Projects</div>
+            <div class="project-grid" id="project-grid">
+                <!-- Populated by projects-loader.js -->
+            </div>
 
-            <!-- Noscript fallback -->
+            <!-- Noscript fallback: static cards for when JS is disabled -->
             <noscript>
                 <div class="project-grid">
                     <a href="/projects/nira/" class="project-card">
-                        <div class="project-card-title">NIRA</div>
-                        <div class="project-card-subtitle">Natural IVF Response Assistant</div>
-                        <div class="project-card-context">BGU &amp; Soroka Medical Hackathon &middot; 2025</div>
-                        <div class="project-card-desc">AI-powered patient support for IVF treatment queries in a healthcare-compliant framework.</div>
-                        <div class="project-card-tags">
-                            <span class="tag">Healthcare AI</span><span class="tag">NLP</span><span class="tag">Patient Support</span>
-                        </div>
+                        <div class="card-context">BGU &amp; Soroka Medical Hackathon · 2025</div>
+                        <div class="card-title">NIRA</div>
+                        <div class="card-subtitle">Natural IVF Response Assistant</div>
+                        <div class="card-desc">AI-powered patient support for IVF treatment queries in a healthcare-compliant framework.</div>
+                        <div class="tag-list"><span class="tag">Healthcare AI</span><span class="tag">NLP</span></div>
+                        <div class="demo-arrow">View interactive demo →</div>
                     </a>
                     <a href="/projects/baron-ai/" class="project-card">
-                        <div class="project-card-title">Baron AI / Mr. Smith</div>
-                        <div class="project-card-subtitle">AI Security Platform</div>
-                        <div class="project-card-context">Independent Project</div>
-                        <div class="project-card-desc">Multi-agent pentesting automation with 16 locally-hosted models, custom MCP integration, and MITRE ATT&amp;CK RAG pipeline.</div>
-                        <div class="project-card-tags">
-                            <span class="tag">Multi-Agent AI</span><span class="tag">Kali Linux</span><span class="tag">MCP</span>
-                        </div>
+                        <div class="card-context">Independent Project</div>
+                        <div class="card-title">Baron AI / Mr. Smith</div>
+                        <div class="card-subtitle">AI Security Platform</div>
+                        <div class="card-desc">Multi-agent pentesting automation platform on Kali Linux with MITRE ATT&CK RAG pipeline.</div>
+                        <div class="tag-list"><span class="tag">Multi-Agent AI</span><span class="tag">Kali Linux</span></div>
+                        <div class="demo-arrow">View interactive demo →</div>
                     </a>
                     <a href="/projects/mcp-client/" class="project-card">
-                        <div class="project-card-title">MCP Layer Client</div>
-                        <div class="project-card-subtitle">Universal MCP Server Bridge</div>
-                        <div class="project-card-context">Independent Project</div>
-                        <div class="project-card-desc">Custom 5ire-based MCP client connecting up to 1,000 servers.</div>
-                        <div class="project-card-tags">
-                            <span class="tag">MCP Protocol</span><span class="tag">JSON-RPC 2.0</span>
-                        </div>
+                        <div class="card-context">Independent Project</div>
+                        <div class="card-title">MCP Layer Client</div>
+                        <div class="card-subtitle">Universal MCP Server Bridge</div>
+                        <div class="card-desc">Custom 5ire-based client connecting up to 1,000 MCP servers with cached tool registries.</div>
+                        <div class="tag-list"><span class="tag">MCP Protocol</span><span class="tag">JSON-RPC 2.0</span></div>
+                        <div class="demo-arrow">View interactive demo →</div>
                     </a>
                     <a href="/projects/rag-finance/" class="project-card">
-                        <div class="project-card-title">Hybrid RAG Financial Analysis</div>
-                        <div class="project-card-subtitle">SEC 10-Q Document Intelligence</div>
-                        <div class="project-card-context">AI Engineering Capstone &middot; BGU &middot; 2025</div>
-                        <div class="project-card-desc">Graph-enhanced hybrid RAG system for SEC 10-Q financial document analysis.</div>
-                        <div class="project-card-tags">
-                            <span class="tag">RAG</span><span class="tag">Graph Retrieval</span><span class="tag">DeepEval</span>
-                        </div>
+                        <div class="card-context">AI Engineering Capstone · BGU · 2025</div>
+                        <div class="card-title">Hybrid RAG Financial Analysis</div>
+                        <div class="card-subtitle">SEC 10-Q Document Intelligence</div>
+                        <div class="card-desc">Graph-enhanced hybrid RAG system. 73-page documents at 146% above requirements.</div>
+                        <div class="tag-list"><span class="tag">RAG</span><span class="tag">Graph Retrieval</span></div>
+                        <div class="demo-arrow">View interactive demo →</div>
                     </a>
                     <a href="/projects/ai-screening/" class="project-card">
-                        <div class="project-card-title">AI Recruitment Screening</div>
-                        <div class="project-card-subtitle">Injection-Hardened CV Analysis</div>
-                        <div class="project-card-context">Independent Project</div>
-                        <div class="project-card-desc">Agentic AI browser prompts for automated CV and LinkedIn evaluation with security hardening.</div>
-                        <div class="project-card-tags">
-                            <span class="tag">AI Screening</span><span class="tag">Prompt Injection Defense</span>
-                        </div>
+                        <div class="card-context">Independent Project</div>
+                        <div class="card-title">AI Recruitment Screening</div>
+                        <div class="card-subtitle">Injection-Hardened CV Analysis</div>
+                        <div class="card-desc">Automated CV and LinkedIn evaluation with prompt injection defense.</div>
+                        <div class="tag-list"><span class="tag">AI Screening</span><span class="tag">Prompt Injection Defense</span></div>
+                        <div class="demo-arrow">View interactive demo →</div>
                     </a>
                     <div class="project-card featured">
-                        <div class="project-card-title">Enterprise Healthcare RTLS Infrastructure</div>
-                        <div class="project-card-subtitle">17 Years of Mission-Critical Deployments</div>
-                        <div class="project-card-context">2Plus Wireless Solutions &middot; 2008&ndash;2025</div>
-                        <div class="project-card-desc">Architected and managed 17 enterprise RTLS and temperature monitoring deployments protecting Israel&rsquo;s pharmaceutical cold chain.</div>
-                        <div class="project-card-long-desc">Full lifecycle ownership across a 1,000-clinic healthcare network (17 hospitals), a 300-store national retail chain, and 15 specialized installations. Designed solutions using WiFi triangulation, UWB, and BLE across Wiliot, IntraPosition, KontaktIO, and SecuritasHealthCare platforms.</div>
-                        <div class="project-card-tags">
-                            <span class="tag">Solution Architecture</span><span class="tag">RTLS</span><span class="tag">Cold Chain</span>
-                        </div>
+                        <div class="card-context">2Plus Wireless Solutions · 2008–2025</div>
+                        <div class="card-title">Enterprise Healthcare RTLS Infrastructure</div>
+                        <div class="card-subtitle">17 Years of Mission-Critical Deployments</div>
+                        <div class="card-desc">Architected and managed 17 enterprise RTLS and temperature monitoring deployments protecting Israel's pharmaceutical cold chain across 1,000+ healthcare facilities and 300+ retail locations.</div>
+                        <div class="card-long-desc">Full lifecycle ownership across a 1,000-clinic healthcare network (17 hospitals), a 300-store national retail chain, and 15 specialized installations. Designed solutions using WiFi triangulation, UWB, and BLE across Wiliot, IntraPosition, KontaktIO, and SecuritasHealthCare platforms. Integrated RTLS with healthcare management systems, pharmacy software, ERP systems, and regulatory compliance platforms via custom API development. Second-in-command of the RTLS department and primary technical escalation point.</div>
+                        <div class="tag-list"><span class="tag">Solution Architecture</span><span class="tag">RTLS</span><span class="tag">Cold Chain</span><span class="tag">Wiliot</span><span class="tag">IntraPosition</span><span class="tag">UWB</span><span class="tag">BLE</span><span class="tag">System Integration</span></div>
                     </div>
                 </div>
             </noscript>
         </section>
 
-        <!-- ═══ Credentials ═══ -->
+        <!-- ══════ CREDENTIALS ══════ -->
         <section class="section reveal">
-            <div class="section-label"><span class="pipe">|</span> Credentials</div>
+            <div class="section-label">Credentials</div>
             <div class="credentials-grid">
                 <div class="credential">
                     <div class="credential-year">2025</div>
-                    <div class="credential-title">AI Engineering &mdash; Ben Gurion University</div>
-                    <div class="credential-detail">Capstone: Hybrid RAG for SEC 10-Q financial document analysis with graph-enhanced retrieval. Invited as Course Practitioner for next cohort.</div>
-                    <div class="credential-tag">Invited as Course Practitioner</div>
+                    <div class="credential-title">AI Engineering — Ben Gurion University</div>
+                    <div class="credential-detail">Capstone: Hybrid RAG for SEC 10-Q financial document analysis with graph-enhanced retrieval. 73-page documents processed at 146% above requirements with zero degradation.</div>
+                    <div class="credential-tag">Invited as Course Practitioner for next cohort</div>
                 </div>
                 <div class="credential">
                     <div class="credential-year">2025</div>
-                    <div class="credential-title">NIRA &mdash; BGU &amp; Soroka Medical Hackathon</div>
-                    <div class="credential-detail">Team project: Natural IVF Response Assistant &mdash; AI-powered patient support in a healthcare-compliant framework.</div>
+                    <div class="credential-title">NIRA — BGU &amp; Soroka Medical Hackathon</div>
+                    <div class="credential-detail">Team project: Natural IVF Response Assistant — AI-powered patient support for IVF treatment in a healthcare-compliant framework.</div>
+                    <div class="credential-tag">AI + Healthcare domain convergence</div>
                 </div>
                 <div class="credential">
-                    <div class="credential-year">2008 &ndash; 2025</div>
-                    <div class="credential-title">Senior RTLS Solution Architect &mdash; 2Plus Wireless Solutions</div>
+                    <div class="credential-year">2008 – 2025</div>
+                    <div class="credential-title">Senior RTLS Solution Architect — 2Plus Wireless Solutions</div>
                     <div class="credential-detail">17 years owning full solution lifecycle across healthcare networks, national retail chains, and specialized installations. Aruba Gold Partner, 400+ customers worldwide.</div>
                 </div>
                 <div class="credential">
                     <div class="credential-year">Foundation</div>
-                    <div class="credential-title">MCSA &middot; .NET/C# Development</div>
-                    <div class="credential-detail">HackerU College (networking infrastructure) &amp; John Bryce College (application development). Military: Base IT Admin, 150-user network, Staff Sergeant (2004&ndash;2006).</div>
+                    <div class="credential-title">MCSA · .NET/C# Development</div>
+                    <div class="credential-detail">HackerU College (networking infrastructure) &amp; John Bryce College (application development). Military: Base IT Admin, 150-user network, Staff Sergeant (2004–2006).</div>
                 </div>
             </div>
         </section>
 
-        <!-- ═══ Technology ═══ -->
+        <!-- ══════ TECHNOLOGY ══════ -->
         <section class="section reveal">
-            <div class="section-label"><span class="pipe">|</span> Technology</div>
-            <div class="tech-rows">
+            <div class="section-label">Technology</div>
+            <div class="tech-list">
                 <div class="tech-row">
                     <div class="tech-label">RTLS / IoT</div>
-                    <div class="tech-items">Wiliot &middot; IntraPosition &middot; KontaktIO &middot; SecuritasHealthCare &middot; UWB &middot; BLE &middot; WiFi Triangulation</div>
+                    <div class="tech-items">Wiliot · IntraPosition · KontaktIO · SecuritasHealthCare · UWB · BLE · WiFi Triangulation</div>
                 </div>
                 <div class="tech-row">
                     <div class="tech-label">AI / ML</div>
-                    <div class="tech-items">Python &middot; LLM Orchestration &middot; RAG &middot; Vector Databases &middot; MCP &middot; GGUF/SINQ/MLC-LLM Quantization &middot; DeepEval</div>
+                    <div class="tech-items">Python · LLM Orchestration · RAG · Vector Databases · MCP · GGUF/SINQ/MLC-LLM Quantization · DeepEval</div>
                 </div>
                 <div class="tech-row">
                     <div class="tech-label">Security</div>
-                    <div class="tech-items">Kali Linux &middot; Baron AI &middot; MITRE ATT&amp;CK &middot; Pentesting Automation &middot; Prompt Injection Detection</div>
+                    <div class="tech-items">Kali Linux · Baron AI · MITRE ATT&CK · Pentesting Automation · Prompt Injection Detection</div>
                 </div>
                 <div class="tech-row">
                     <div class="tech-label">Infra</div>
-                    <div class="tech-items">Aruba (Gold Partner) &middot; Cisco &middot; Enterprise WLAN &middot; Network Design &middot; System Integration &amp; APIs</div>
+                    <div class="tech-items">Aruba (Gold Partner) · Cisco · Enterprise WLAN · Network Design · System Integration &amp; APIs</div>
                 </div>
                 <div class="tech-row">
                     <div class="tech-label">Development</div>
-                    <div class="tech-items">Python &middot; C#/.NET &middot; React &middot; Three.js &middot; HTML/CSS/JS &middot; MCP Client/Server</div>
+                    <div class="tech-items">Python · C# / .NET · React · Three.js · HTML/CSS/JS · MCP Client/Server</div>
                 </div>
             </div>
         </section>
 
-        <!-- ═══ Footer ═══ -->
+        <!-- ══════ FOOTER ══════ -->
         <footer class="footer">
             <div class="footer-links">
                 <a href="mailto:nadavvitlam@outlook.com">Email</a>
                 <a href="https://www.linkedin.com/in/nadav-vitlam/" target="_blank" rel="noopener">LinkedIn</a>
                 <a href="https://github.com/NVitlam" target="_blank" rel="noopener">GitHub</a>
             </div>
-            <div class="footer-copy">&copy; 2026 Nadav Vitlam</div>
+            <div class="footer-copy">© 2026 Nadav Vitlam</div>
         </footer>
+
     </div>
 
+    <script src="/assets/js/network-bg.js"></script>
     <script src="/assets/js/projects-loader.js"></script>
-    <script src="/assets/js/scroll-reveal.js"></script>
 </body>
 </html>
