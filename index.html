@@ -244,7 +244,7 @@ body::after{content:"";position:fixed;inset:0;z-index:98;pointer-events:none;opa
       <a href="#foundation">FOUNDATION</a>
       <a href="#credentials">CREDENTIALS</a>
       <a href="#tech">STACK</a>
-      <a class="btn" href="/cdn-cgi/l/email-protection#d8b6b9bcb9aeaeb1acb4b9b598bfb5b9b1b4f6bbb7b5">Email me</a>
+      <button class="btn copy-email" type="button" aria-label="Copy email address to clipboard">Email me</button>
     </nav>
   </div>
 </header>
@@ -258,7 +258,7 @@ body::after{content:"";position:fixed;inset:0;z-index:98;pointer-events:none;opa
     <p class="h-sub"><span class="mono prompt" aria-hidden="true">$&nbsp;</span><span id="typeTarget">Multi-Agent Systems&ensp;·&ensp;RAG&ensp;·&ensp;Local-First AI</span><span class="caret" aria-hidden="true"></span></p>
     <p class="quote">Solution architect turned AI engineer. 17 years of enterprise delivery where failure meant spoiled medicine. Now I build AI systems with the same standard: <strong>they ship, they run, and they don't leak your data.</strong></p>
     <div class="contact-row">
-      <a class="btn btn-solid" href="/cdn-cgi/l/email-protection#117f707570676778657d707c51767c70787d3f727e7c"><span class="__cf_email__" data-cfemail="442a25202532322d30282529042329252d286a272b29">[email&#160;protected]</span></a>
+      <button class="btn btn-solid copy-email" type="button" aria-label="Copy email address to clipboard">nadavvitlam@gmail.com</button>
       <a class="mlink" href="tel:+972546528158">+972-54-652-8158</a>
       <a class="mlink" href="https://www.linkedin.com/in/nadav-vitlam/">LinkedIn ↗</a>
       <a class="mlink" href="https://github.com/NVitlam">GitHub ↗</a>
@@ -481,7 +481,7 @@ body::after{content:"";position:fixed;inset:0;z-index:98;pointer-events:none;opa
   <div class="wrap">
     <h2 class="cta-h rv">Every system here is running. <em>Ask for a demo.</em></h2>
     <div class="foot-row rv">
-      <a class="btn btn-solid" href="/cdn-cgi/l/email-protection#046a65606572726d70686569446369656d682a676b693b7771666e616770394061696b21363476617571617770"><span class="__cf_email__" data-cfemail="543a35303522223d20383539143339353d387a373b39">[email&#160;protected]</span></a>
+      <button class="btn btn-solid copy-email" type="button" aria-label="Copy email address to clipboard">nadavvitlam@gmail.com</button>
       <button class="btn btn-quiet" type="button" id="copyBtn" aria-label="Copy email address to clipboard">Copy address</button>
       <a class="mlink" href="tel:+972546528158">+972-54-652-8158</a>
       <a class="mlink" href="https://www.linkedin.com/in/nadav-vitlam/">linkedin.com/in/nadav-vitlam ↗</a>
@@ -495,7 +495,7 @@ body::after{content:"";position:fixed;inset:0;z-index:98;pointer-events:none;opa
 </footer>
 </main>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 document.documentElement.classList.add('js');
 addEventListener('DOMContentLoaded',()=>{
   const els=document.querySelectorAll('.rv');
@@ -513,6 +513,12 @@ addEventListener('DOMContentLoaded',()=>{
   }));
   const tr=document.querySelector('.trace svg');
   if(tr)tr.addEventListener('click',()=>tr.querySelectorAll('path').forEach(p=>{p.style.animation='none';p.getBoundingClientRect();p.style.animation=''}));
+  document.querySelectorAll('.copy-email').forEach(b=>b.addEventListener('click',async()=>{
+    const orig=b.textContent;
+    try{await navigator.clipboard.writeText('nadavvitlam@gmail.com');b.textContent='Copied ✓'}
+    catch{b.textContent='nadavvitlam@gmail.com'}
+    setTimeout(()=>b.textContent=orig,2200);
+  }));
   const btn=document.getElementById('copyBtn');
   if(btn)btn.addEventListener('click',async()=>{
     try{await navigator.clipboard.writeText('nadavvitlam@gmail.com');btn.textContent='Copied ✓'}
